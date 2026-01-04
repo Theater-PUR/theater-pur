@@ -1,14 +1,19 @@
 import { Layout } from "@/components/layout";
 import { Hero } from "@/components/Hero";
-import { PlayCard, type Play } from "@/components/PlayCard";
-import { NewsCard, type NewsPost } from "@/components/NewsCard";
+import { PlayCard, type Play as PlayCardType } from "@/components/PlayCard";
+import { NewsCard, type NewsPost as NewsCardType } from "@/components/NewsCard";
 import { SectionHeader } from "@/components/SectionHeader";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Users, Calendar, Award } from "lucide-react";
+import { ArrowRight, Users, Calendar, Award, Loader2 } from "lucide-react";
+import { useCurrentPlay, useLatestNews } from "@/hooks/useSanity";
+import { isSanityConfigured, urlFor } from "@/lib/sanity";
+import { getPlainText } from "@/lib/blockContent";
+import { format } from "date-fns";
+import { de } from "date-fns/locale";
 
-// Mock data - will be replaced with Sanity CMS data
-const currentPlay: Play = {
+// Mock data - used when Sanity is not configured
+const mockCurrentPlay: PlayCardType = {
   id: "ein-sommernachtstraum-2024",
   title: "Ein Sommernachtstraum",
   subtitle: "von William Shakespeare",
@@ -23,7 +28,7 @@ const currentPlay: Play = {
   },
 };
 
-const recentNews: NewsPost[] = [
+const mockRecentNews: NewsCardType[] = [
   {
     id: "proben-sommernachtstraum",
     title: "Die Proben laufen auf Hochtouren",
@@ -60,6 +65,48 @@ const stats = [
 ];
 
 export default function HomePage() {
+  const { data: sanityCurrentPlay, isLoading: playLoading } = useCurrentPlay();
+  const { data: sanityNews, isLoading: newsLoading } = useLatestNews();
+
+  const isConfigured = isSanityConfigured();
+
+  // Transform Sanity data to component format
+  const currentPlay: PlayCardType | null = sanityCurrentPlay
+    ? {
+        id: sanityCurrentPlay.slug.current,
+        title: sanityCurrentPlay.title,
+        subtitle: sanityCurrentPlay.author ? `von ${sanityCurrentPlay.author}` : undefined,
+        description: getPlainText(sanityCurrentPlay.description),
+        coverImage: sanityCurrentPlay.coverImage
+          ? urlFor(sanityCurrentPlay.coverImage).width(800).url()
+          : undefined,
+        year: sanityCurrentPlay.year,
+        isActive: sanityCurrentPlay.isCurrent,
+        nextPerformance: sanityCurrentPlay.performances?.[0]
+          ? {
+              date: `${format(new Date(sanityCurrentPlay.performances[0].date), "d. MMMM yyyy", { locale: de })}, ${sanityCurrentPlay.performances[0].time}`,
+              location: sanityCurrentPlay.performances[0].location,
+            }
+          : undefined,
+      }
+    : isConfigured
+      ? null
+      : mockCurrentPlay;
+
+  const recentNews: NewsCardType[] =
+    sanityNews && sanityNews.length > 0
+      ? sanityNews.map((post) => ({
+          id: post.slug.current,
+          title: post.title,
+          excerpt: post.excerpt,
+          coverImage: post.coverImage ? urlFor(post.coverImage).width(600).url() : undefined,
+          publishedAt: format(new Date(post.publishedAt), "d. MMMM yyyy", { locale: de }),
+          category: post.category,
+        }))
+      : isConfigured
+        ? []
+        : mockRecentNews;
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -82,7 +129,17 @@ export default function HomePage() {
             description="Sichern Sie sich jetzt Ihre Tickets für dieses unvergessliche Theatererlebnis."
           />
           <div className="max-w-5xl mx-auto">
-            <PlayCard play={currentPlay} variant="featured" />
+            {playLoading ? (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : currentPlay ? (
+              <PlayCard play={currentPlay} variant="featured" />
+            ) : (
+              <div className="text-center py-16 text-muted-foreground">
+                Aktuell kein Stück auf dem Spielplan.
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -126,11 +183,21 @@ export default function HomePage() {
               </Link>
             </Button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentNews.map((post) => (
-              <NewsCard key={post.id} post={post} />
-            ))}
-          </div>
+          {newsLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : recentNews.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recentNews.map((post) => (
+                <NewsCard key={post.id} post={post} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 text-muted-foreground">
+              Keine Neuigkeiten vorhanden.
+            </div>
+          )}
         </div>
       </section>
 

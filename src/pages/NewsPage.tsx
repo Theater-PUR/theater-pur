@@ -1,9 +1,18 @@
+import { useParams } from "react-router-dom";
 import { Layout } from "@/components/layout";
 import { SectionHeader } from "@/components/SectionHeader";
-import { NewsCard, type NewsPost } from "@/components/NewsCard";
+import { NewsCard, type NewsPost as NewsCardType } from "@/components/NewsCard";
+import { Loader2, Calendar, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { useAllNews, useNewsBySlug } from "@/hooks/useSanity";
+import { isSanityConfigured, urlFor } from "@/lib/sanity";
+import { renderBlockContent } from "@/lib/blockContent";
+import { format } from "date-fns";
+import { de } from "date-fns/locale";
 
-// Mock data - will be replaced with Sanity CMS
-const newsPosts: NewsPost[] = [
+// Mock data - used when Sanity is not configured
+const mockNewsPosts: NewsCardType[] = [
   {
     id: "proben-sommernachtstraum",
     title: "Die Proben laufen auf Hochtouren",
@@ -60,11 +69,28 @@ const newsPosts: NewsPost[] = [
   },
 ];
 
-export default function NewsPage() {
+function NewsListView() {
+  const { data: sanityNews, isLoading } = useAllNews();
+  const isConfigured = isSanityConfigured();
+
+  const newsPosts: NewsCardType[] =
+    sanityNews && sanityNews.length > 0
+      ? sanityNews.map((post) => ({
+          id: post.slug.current,
+          title: post.title,
+          excerpt: post.excerpt,
+          coverImage: post.coverImage ? urlFor(post.coverImage).width(800).url() : undefined,
+          publishedAt: format(new Date(post.publishedAt), "d. MMMM yyyy", { locale: de }),
+          category: post.category,
+        }))
+      : isConfigured
+        ? []
+        : mockNewsPosts;
+
   const [featuredPost, ...otherPosts] = newsPosts;
 
   return (
-    <Layout>
+    <>
       {/* Header */}
       <section className="pt-32 pb-16 bg-spotlight-top">
         <div className="container mx-auto px-4">
@@ -76,23 +102,152 @@ export default function NewsPage() {
         </div>
       </section>
 
-      {/* Featured Post */}
-      <section className="py-8 bg-background">
-        <div className="container mx-auto px-4">
-          <NewsCard post={featuredPost} variant="featured" />
-        </div>
-      </section>
+      {isLoading ? (
+        <section className="py-16 bg-background">
+          <div className="container mx-auto px-4 flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        </section>
+      ) : newsPosts.length > 0 ? (
+        <>
+          {/* Featured Post */}
+          <section className="py-8 bg-background">
+            <div className="container mx-auto px-4">
+              <NewsCard post={featuredPost} variant="featured" />
+            </div>
+          </section>
 
-      {/* Other Posts */}
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {otherPosts.map((post) => (
-              <NewsCard key={post.id} post={post} />
-            ))}
+          {/* Other Posts */}
+          {otherPosts.length > 0 && (
+            <section className="py-16 bg-background">
+              <div className="container mx-auto px-4">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {otherPosts.map((post) => (
+                    <NewsCard key={post.id} post={post} />
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+        </>
+      ) : (
+        <section className="py-16 bg-background">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-muted-foreground text-lg">Noch keine Neuigkeiten vorhanden.</p>
+          </div>
+        </section>
+      )}
+    </>
+  );
+}
+
+function NewsDetailView({ slug }: { slug: string }) {
+  const { data: post, isLoading } = useNewsBySlug(slug);
+  const isConfigured = isSanityConfigured();
+
+  // Use mock data if not configured
+  const mockPost = !isConfigured ? mockNewsPosts.find((p) => p.id === slug) : null;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!post && !mockPost) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-display font-bold text-foreground mb-2">
+            Artikel nicht gefunden
+          </h1>
+          <p className="text-muted-foreground mb-4">
+            Der gesuchte Artikel konnte nicht gefunden werden.
+          </p>
+          <Button asChild variant="outline">
+            <Link to="/neuigkeiten">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Zurück zur Übersicht
+            </Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const title = post?.title || mockPost?.title || "";
+  const coverImage = post?.coverImage
+    ? urlFor(post.coverImage).width(1200).url()
+    : mockPost?.coverImage;
+  const publishedAt = post?.publishedAt
+    ? format(new Date(post.publishedAt), "d. MMMM yyyy", { locale: de })
+    : mockPost?.publishedAt || "";
+  const category = post?.category || mockPost?.category;
+  const content = post?.content;
+  const excerpt = mockPost?.excerpt;
+
+  return (
+    <>
+      {/* Hero */}
+      <section className="relative min-h-[50vh] flex items-end overflow-hidden">
+        {coverImage && (
+          <>
+            <div className="absolute inset-0">
+              <img
+                src={coverImage}
+                alt={title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+            </div>
+          </>
+        )}
+        <div className="relative z-10 container mx-auto px-4 pb-12 pt-32">
+          <Button asChild variant="ghost" className="mb-4 -ml-4 text-muted-foreground hover:text-foreground">
+            <Link to="/neuigkeiten">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Alle Neuigkeiten
+            </Link>
+          </Button>
+          {category && (
+            <span className="inline-block px-3 py-1 text-xs font-semibold bg-primary text-primary-foreground rounded-full mb-4">
+              {category}
+            </span>
+          )}
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
+            {title}
+          </h1>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Calendar className="w-4 h-4" />
+            <time>{publishedAt}</time>
           </div>
         </div>
       </section>
+
+      {/* Content */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto prose prose-invert prose-lg">
+            {content ? (
+              renderBlockContent(content)
+            ) : excerpt ? (
+              <p className="text-muted-foreground leading-relaxed">{excerpt}</p>
+            ) : null}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+export default function NewsPage() {
+  const { id } = useParams<{ id: string }>();
+
+  return (
+    <Layout>
+      {id ? <NewsDetailView slug={id} /> : <NewsListView />}
     </Layout>
   );
 }
