@@ -1,73 +1,108 @@
-# Welcome to your Lovable project
+# Theater Pur Homepage 2026
 
-## Project info
+A modern theater website with integrated CMS powered by Sanity.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Quick Start
 
-## How can I edit this code?
+### Prerequisites
 
-There are several ways of editing your application.
+- [Bun](https://bun.sh) - Fast all-in-one JavaScript runtime
 
-**Use Lovable**
+### Installation
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+# Install dependencies
+bun install
 ```
 
-**Edit a file directly in GitHub**
+### Development
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Run both services in separate terminals:
 
-**Use GitHub Codespaces**
+```bash
+# Terminal 1: Frontend (http://localhost:5173)
+bun dev
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Terminal 2: Sanity Studio CMS (http://localhost:3333)
+bun studio
+```
 
-## What technologies are used for this project?
+## Technologies
 
-This project is built with:
+### Frontend
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Vite** - Build tool and dev server
+- **React 18** - UI framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **shadcn/ui** - Component library
+- **React Router** - Navigation
+- **TanStack Query** - Data fetching
 
-## How can I deploy this project?
+### CMS
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+- **Sanity** - Headless CMS
+- Integrated content management for:
+  - Theater plays/productions
+  - News posts
+  - Team members
+  - Site settings
 
-## Can I connect a custom domain to my Lovable project?
+## Project Structure
 
-Yes, you can!
+```
+/
+├── src/
+│   ├── components/        # React components
+│   ├── pages/            # Page components
+│   ├── sanity-schemas/   # Sanity content schemas
+│   └── lib/              # Utilities and Sanity client
+├── sanity.config.ts      # Sanity Studio config
+└── package.json          # Unified dependencies
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Content Management
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+See [SANITY_SETUP.md](./SANITY_SETUP.md) for detailed CMS documentation.
+
+## Available Scripts
+
+### Frontend
+
+- `bun dev` - Start development server
+- `bun build` - Build for production
+- `bun preview` - Preview production build
+- `bun lint` - Run ESLint
+
+### Sanity Studio
+
+- `bun studio` - Start CMS locally
+- `bun studio:build` - Build CMS
+- `bun studio:deploy` - Deploy CMS to Sanity hosting
+
+## Deployment
+
+### Frontend
+
+Build and deploy the `dist` folder to your hosting provider:
+
+```bash
+bun build
+```
+
+### Sanity Studio
+
+Deploy the CMS to Sanity's hosting:
+
+```bash
+bun studio:deploy
+```
+
+## Why Unified Repository?
+
+This project uses a single repository for both frontend and CMS:
+
+- ✅ Single source of truth for content schemas
+- ✅ Simplified dependency management
+- ✅ Easier deployment and CI/CD
+- ✅ No need to sync changes between repos
