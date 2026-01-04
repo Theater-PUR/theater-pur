@@ -1,74 +1,74 @@
-import { Layout } from "@/components/layout";
-import { Hero } from "@/components/Hero";
-import { PlayCard, type Play as PlayCardType } from "@/components/PlayCard";
-import { NewsCard, type NewsPost as NewsCardType } from "@/components/NewsCard";
-import { SectionHeader } from "@/components/SectionHeader";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { ArrowRight, Users, Calendar, Award, Loader2 } from "lucide-react";
-import { useCurrentPlay, useLatestNews } from "@/hooks/useSanity";
-import { isSanityConfigured, urlFor } from "@/lib/sanity";
-import { getPlainText } from "@/lib/blockContent";
-import { format } from "date-fns";
-import { de } from "date-fns/locale";
+import {Layout} from '@/components/layout'
+import {Hero} from '@/components/Hero'
+import {PlayCard, type Play as PlayCardType} from '@/components/PlayCard'
+import {NewsCard, type NewsPost as NewsCardType} from '@/components/NewsCard'
+import {SectionHeader} from '@/components/SectionHeader'
+import {Button} from '@/components/ui/button'
+import {Link} from 'react-router-dom'
+import {ArrowRight, Users, Calendar, Award, Loader2} from 'lucide-react'
+import {useCurrentPlay, useLatestNews} from '@/hooks/useSanity'
+import {isSanityConfigured, urlFor} from '@/lib/sanity'
+import {getPlainText} from '@/lib/blockContent'
+import {format} from 'date-fns'
+import {de} from 'date-fns/locale'
 
 // Mock data - used when Sanity is not configured
 const mockCurrentPlay: PlayCardType = {
-  id: "ein-sommernachtstraum-2024",
-  title: "Ein Sommernachtstraum",
-  subtitle: "von William Shakespeare",
+  id: 'ein-sommernachtstraum-2024',
+  title: 'Ein Sommernachtstraum',
+  subtitle: 'von William Shakespeare',
   description:
-    "Tauchen Sie ein in die magische Welt der Feen und Liebenden. Diese zeitlose Komödie entführt Sie in einen verzauberten Wald, wo nichts ist, wie es scheint. Eine Nacht voller Verwirrung, Zauber und am Ende wahrer Liebe.",
-  coverImage: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=800&q=80",
+    'Tauchen Sie ein in die magische Welt der Feen und Liebenden. Diese zeitlose Komödie entführt Sie in einen verzauberten Wald, wo nichts ist, wie es scheint. Eine Nacht voller Verwirrung, Zauber und am Ende wahrer Liebe.',
+  coverImage: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=800&q=80',
   year: 2024,
   isActive: true,
   nextPerformance: {
-    date: "15. Februar 2025, 19:30 Uhr",
-    location: "Kulturzentrum Weyhe",
+    date: '15. Februar 2025, 19:30 Uhr',
+    location: 'Kulturzentrum Weyhe',
   },
-};
+}
 
 const mockRecentNews: NewsCardType[] = [
   {
-    id: "proben-sommernachtstraum",
-    title: "Die Proben laufen auf Hochtouren",
+    id: 'proben-sommernachtstraum',
+    title: 'Die Proben laufen auf Hochtouren',
     excerpt:
-      "Unser Ensemble bereitet sich intensiv auf die Premiere vor. Ein Blick hinter die Kulissen zeigt die Leidenschaft unserer Schauspieler.",
-    coverImage: "https://images.unsplash.com/photo-1503095396549-807759245b35?w=600&q=80",
-    publishedAt: "5. Januar 2025",
-    category: "Backstage",
+      'Unser Ensemble bereitet sich intensiv auf die Premiere vor. Ein Blick hinter die Kulissen zeigt die Leidenschaft unserer Schauspieler.',
+    coverImage: 'https://images.unsplash.com/photo-1503095396549-807759245b35?w=600&q=80',
+    publishedAt: '5. Januar 2025',
+    category: 'Backstage',
   },
   {
-    id: "neue-mitglieder-2024",
-    title: "Neue Gesichter im Ensemble",
+    id: 'neue-mitglieder-2024',
+    title: 'Neue Gesichter im Ensemble',
     excerpt:
-      "Wir freuen uns, drei neue talentierte Schauspieler in unserer Theatergruppe begrüßen zu dürfen.",
-    coverImage: "https://images.unsplash.com/photo-1516307365426-bea591f05011?w=600&q=80",
-    publishedAt: "20. Dezember 2024",
-    category: "Team",
+      'Wir freuen uns, drei neue talentierte Schauspieler in unserer Theatergruppe begrüßen zu dürfen.',
+    coverImage: 'https://images.unsplash.com/photo-1516307365426-bea591f05011?w=600&q=80',
+    publishedAt: '20. Dezember 2024',
+    category: 'Team',
   },
   {
-    id: "ruckblick-weihnachtsfeier",
-    title: "Rückblick: Unsere Weihnachtsfeier",
+    id: 'ruckblick-weihnachtsfeier',
+    title: 'Rückblick: Unsere Weihnachtsfeier',
     excerpt:
-      "Ein wundervoller Abend mit dem gesamten Team, Freunden und Unterstützern des Theaters.",
-    coverImage: "https://images.unsplash.com/photo-1482575832494-771f74bf6857?w=600&q=80",
-    publishedAt: "15. Dezember 2024",
-    category: "Events",
+      'Ein wundervoller Abend mit dem gesamten Team, Freunden und Unterstützern des Theaters.',
+    coverImage: 'https://images.unsplash.com/photo-1482575832494-771f74bf6857?w=600&q=80',
+    publishedAt: '15. Dezember 2024',
+    category: 'Events',
   },
-];
+]
 
 const stats = [
-  { icon: Calendar, value: "15+", label: "Jahre Theatertradition" },
-  { icon: Users, value: "25", label: "Aktive Mitglieder" },
-  { icon: Award, value: "30+", label: "Aufgeführte Stücke" },
-];
+  {icon: Calendar, value: '15+', label: 'Jahre Theatertradition'},
+  {icon: Users, value: '25', label: 'Aktive Mitglieder'},
+  {icon: Award, value: '30+', label: 'Aufgeführte Stücke'},
+]
 
 export default function HomePage() {
-  const { data: sanityCurrentPlay, isLoading: playLoading } = useCurrentPlay();
-  const { data: sanityNews, isLoading: newsLoading } = useLatestNews();
+  const {data: sanityCurrentPlay, isLoading: playLoading} = useCurrentPlay()
+  const {data: sanityNews, isLoading: newsLoading} = useLatestNews()
 
-  const isConfigured = isSanityConfigured();
+  const isConfigured = isSanityConfigured()
 
   // Transform Sanity data to component format
   const currentPlay: PlayCardType | null = sanityCurrentPlay
@@ -81,17 +81,17 @@ export default function HomePage() {
           ? urlFor(sanityCurrentPlay.coverImage).width(800).url()
           : undefined,
         year: sanityCurrentPlay.year,
-        isActive: sanityCurrentPlay.isCurrent,
+        isActive: true, // Always true for current play
         nextPerformance: sanityCurrentPlay.performances?.[0]
           ? {
-              date: `${format(new Date(sanityCurrentPlay.performances[0].date), "d. MMMM yyyy", { locale: de })}, ${sanityCurrentPlay.performances[0].time}`,
-              location: sanityCurrentPlay.performances[0].location,
+              date: `${format(new Date(sanityCurrentPlay.performances[0].date), 'd. MMMM yyyy', {locale: de})}, ${sanityCurrentPlay.performances[0].time}`,
+              location: sanityCurrentPlay.performances[0].location?.name || sanityCurrentPlay.performances[0].location?.city || 'Ort nicht angegeben',
             }
           : undefined,
       }
     : isConfigured
       ? null
-      : mockCurrentPlay;
+      : mockCurrentPlay
 
   const recentNews: NewsCardType[] =
     sanityNews && sanityNews.length > 0
@@ -100,12 +100,12 @@ export default function HomePage() {
           title: post.title,
           excerpt: post.excerpt,
           coverImage: post.coverImage ? urlFor(post.coverImage).width(600).url() : undefined,
-          publishedAt: format(new Date(post.publishedAt), "d. MMMM yyyy", { locale: de }),
+          publishedAt: format(new Date(post.publishedAt), 'd. MMMM yyyy', {locale: de}),
           category: post.category,
         }))
       : isConfigured
         ? []
-        : mockRecentNews;
+        : mockRecentNews
 
   return (
     <Layout>
@@ -156,9 +156,7 @@ export default function HomePage() {
                 <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
                   <stat.icon className="w-7 h-7 text-primary" />
                 </div>
-                <p className="font-display text-4xl font-bold text-foreground mb-2">
-                  {stat.value}
-                </p>
+                <p className="font-display text-4xl font-bold text-foreground mb-2">{stat.value}</p>
                 <p className="text-muted-foreground">{stat.label}</p>
               </div>
             ))}
@@ -210,14 +208,19 @@ export default function HomePage() {
               Werden Sie Teil unserer Theaterfamilie
             </h2>
             <p className="text-muted-foreground text-lg">
-              Sie haben Lust auf Theater? Ob auf der Bühne oder hinter den Kulissen – 
-              wir freuen uns immer über neue Gesichter und Talente.
+              Sie haben Lust auf Theater? Ob auf der Bühne oder hinter den Kulissen – wir freuen uns
+              immer über neue Gesichter und Talente.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Button asChild size="lg" className="font-semibold shadow-gold">
                 <Link to="/ueber-uns#kontakt">Kontakt Aufnehmen</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-primary/30 hover:bg-primary/10">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="border-primary/30 hover:bg-primary/10"
+              >
                 <Link to="/archiv">Unsere Geschichte</Link>
               </Button>
             </div>
@@ -225,5 +228,5 @@ export default function HomePage() {
         </div>
       </section>
     </Layout>
-  );
+  )
 }

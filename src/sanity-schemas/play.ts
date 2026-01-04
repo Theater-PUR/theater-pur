@@ -23,13 +23,6 @@ export default {
       validation: (Rule: any) => Rule.required(),
     },
     {
-      name: 'isCurrent',
-      title: 'Aktuelles Stück',
-      type: 'boolean',
-      description: 'Ist dies das aktuell laufende Stück?',
-      initialValue: false,
-    },
-    {
       name: 'coverImage',
       title: 'Titelbild',
       type: 'image',
@@ -65,13 +58,13 @@ export default {
       name: 'description',
       title: 'Kurzbeschreibung',
       type: 'array',
-      of: [{ type: 'block' }],
+      of: [{type: 'block'}],
     },
     {
       name: 'synopsis',
       title: 'Ausführliche Beschreibung',
       type: 'array',
-      of: [{ type: 'block' }],
+      of: [{type: 'block'}],
     },
     {
       name: 'cast',
@@ -132,69 +125,101 @@ export default {
             },
             {
               name: 'location',
-              title: 'Ort',
-              type: 'string',
+              title: 'Veranstaltungsort',
+              type: 'object',
+              fields: [
+                {
+                  name: 'name',
+                  title: 'Name',
+                  type: 'string',
+                  description: 'z.B. "Theater PUR" oder "Gemeindezentrum St. Matthias"',
+                },
+                {
+                  name: 'street',
+                  title: 'Straße und Hausnummer',
+                  type: 'string',
+                  description: 'z.B. "Musterstraße 123"',
+                },
+                {
+                  name: 'postalCode',
+                  title: 'Postleitzahl',
+                  type: 'string',
+                },
+                {
+                  name: 'city',
+                  title: 'Stadt',
+                  type: 'string',
+                },
+                {
+                  name: 'remarks',
+                  title: 'Zusätzliche Hinweise',
+                  type: 'text',
+                  description: 'z.B. "Eingang über den Hinterhof" oder "Parkplätze vorhanden"',
+                },
+              ],
             },
             {
               name: 'ticketsAvailable',
               title: 'Verfügbare Plätze',
               type: 'number',
             },
+            {
+              name: 'ticketPrices',
+              title: 'Eintrittspreise',
+              type: 'array',
+              of: [
+                {
+                  type: 'object',
+                  name: 'ticketPrice',
+                  title: 'Preiskategorie',
+                  fields: [
+                    {
+                      name: 'category',
+                      title: 'Kategorie',
+                      type: 'string',
+                      description: 'z.B. "Normal", "Ermäßigt", "Kinder"',
+                    },
+                    {
+                      name: 'price',
+                      title: 'Preis (€)',
+                      type: 'number',
+                    },
+                    {
+                      name: 'description',
+                      title: 'Beschreibung',
+                      type: 'string',
+                      description: 'z.B. "Schüler, Studenten, Schwerbehinderte"',
+                    },
+                  ],
+                  preview: {
+                    select: {
+                      title: 'category',
+                      price: 'price',
+                    },
+                    prepare({title, price}: any) {
+                      return {
+                        title: title,
+                        subtitle: `${price} €`,
+                      }
+                    },
+                  },
+                },
+              ],
+            },
           ],
           preview: {
             select: {
               date: 'date',
               time: 'time',
-              location: 'location',
+              locationName: 'location.name',
+              locationCity: 'location.city',
             },
-            prepare({ date, time, location }: any) {
+            prepare({date, time, locationName, locationCity}: any) {
+              const location = locationName || locationCity || 'Kein Ort angegeben'
               return {
                 title: `${date} - ${time}`,
                 subtitle: location,
-              };
-            },
-          },
-        },
-      ],
-    },
-    {
-      name: 'ticketPrices',
-      title: 'Eintrittspreise',
-      type: 'array',
-      of: [
-        {
-          type: 'object',
-          name: 'ticketPrice',
-          title: 'Preiskategorie',
-          fields: [
-            {
-              name: 'category',
-              title: 'Kategorie',
-              type: 'string',
-              description: 'z.B. "Normal", "Ermäßigt", "Kinder"',
-            },
-            {
-              name: 'price',
-              title: 'Preis (€)',
-              type: 'number',
-            },
-            {
-              name: 'description',
-              title: 'Beschreibung',
-              type: 'string',
-              description: 'z.B. "Schüler, Studenten, Schwerbehinderte"',
-            },
-          ],
-          preview: {
-            select: {
-              title: 'category',
-              price: 'price',
-            },
-            prepare({ title, price }: any) {
-              return {
-                title: title,
-                subtitle: `${price} €`,
-              };
+              }
             },
           },
         },
@@ -230,15 +255,14 @@ export default {
     select: {
       title: 'title',
       year: 'year',
-      isCurrent: 'isCurrent',
       media: 'coverImage',
     },
-    prepare({ title, year, isCurrent, media }: any) {
+    prepare({title, year, media}: any) {
       return {
         title: title,
-        subtitle: `${year}${isCurrent ? ' (Aktuell)' : ''}`,
+        subtitle: `${year}`,
         media: media,
-      };
+      }
     },
   },
-};
+}

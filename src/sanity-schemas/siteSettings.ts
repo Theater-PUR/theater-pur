@@ -58,12 +58,19 @@ export default {
         },
       ],
     },
+    {
+      name: 'currentPlay',
+      title: 'Aktuelles Stück',
+      type: 'reference',
+      to: [{type: 'play'}],
+      description: 'Wählen Sie das aktuell laufende Theaterstück aus',
+    },
   ],
   preview: {
     prepare() {
       return {
         title: 'Seiteneinstellungen',
-      };
+      }
     },
   },
-};
+}

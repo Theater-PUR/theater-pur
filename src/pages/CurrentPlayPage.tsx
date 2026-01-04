@@ -1,99 +1,99 @@
-import { useParams } from "react-router-dom";
-import { Layout } from "@/components/layout";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Clock, Euro, Users, ArrowRight, Loader2 } from "lucide-react";
-import { useCurrentPlay, usePlayBySlug } from "@/hooks/useSanity";
-import { isSanityConfigured, urlFor } from "@/lib/sanity";
-import { renderBlockContent } from "@/lib/blockContent";
-import { format } from "date-fns";
-import { de } from "date-fns/locale";
+import {useParams} from 'react-router-dom'
+import {Layout} from '@/components/layout'
+import {Button} from '@/components/ui/button'
+import {Badge} from '@/components/ui/badge'
+import {Calendar, MapPin, Clock, Euro, Users, ArrowRight, Loader2} from 'lucide-react'
+import {useCurrentPlay, usePlayBySlug} from '@/hooks/useSanity'
+import {isSanityConfigured, urlFor} from '@/lib/sanity'
+import {renderBlockContent} from '@/lib/blockContent'
+import {format} from 'date-fns'
+import {de} from 'date-fns/locale'
 
 // Mock data - used when Sanity is not configured
 const mockCurrentPlay = {
-  id: "ein-sommernachtstraum-2024",
-  title: "Ein Sommernachtstraum",
-  author: "William Shakespeare",
-  director: "Maria Schmidt",
+  id: 'ein-sommernachtstraum-2024',
+  title: 'Ein Sommernachtstraum',
+  author: 'William Shakespeare',
+  director: 'Maria Schmidt',
   description: `Tauchen Sie ein in die magische Welt der Feen und Liebenden. Diese zeitlose Komödie entführt Sie in einen verzauberten Wald, wo nichts ist, wie es scheint.
 
 In Athen herrscht Aufruhr: Hermia soll Demetrius heiraten, liebt aber Lysander. Als die Liebenden in den Wald fliehen, geraten sie in den Bann des Feenkönigs Oberon und seines schelmischen Dieners Puck. Ein Zauber führt zu allerlei Verwirrungen, während die Handwerker um Zettel eine Theateraufführung für die Hochzeit des Herzogs proben.
 
 Eine Nacht voller Verwirrung, Zauber und am Ende wahrer Liebe erwartet Sie.`,
-  coverImage: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=1200&q=80",
+  coverImage: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=1200&q=80',
   isActive: true,
-  duration: "ca. 2 Stunden (inkl. Pause)",
+  duration: 'ca. 2 Stunden (inkl. Pause)',
   cast: [
-    { actor: "Thomas Müller", role: "Oberon, König der Feen" },
-    { actor: "Anna Weber", role: "Titania, Königin der Feen" },
-    { actor: "Felix Braun", role: "Puck" },
-    { actor: "Laura Schmidt", role: "Hermia" },
-    { actor: "Max Fischer", role: "Lysander" },
-    { actor: "Sophie Hoffmann", role: "Helena" },
-    { actor: "Jan Becker", role: "Demetrius" },
-    { actor: "Klaus Werner", role: "Zettel" },
-    { actor: "Peter Schulz", role: "Herzog Theseus" },
-    { actor: "Emma König", role: "Hippolyta" },
+    {actor: 'Thomas Müller', role: 'Oberon, König der Feen'},
+    {actor: 'Anna Weber', role: 'Titania, Königin der Feen'},
+    {actor: 'Felix Braun', role: 'Puck'},
+    {actor: 'Laura Schmidt', role: 'Hermia'},
+    {actor: 'Max Fischer', role: 'Lysander'},
+    {actor: 'Sophie Hoffmann', role: 'Helena'},
+    {actor: 'Jan Becker', role: 'Demetrius'},
+    {actor: 'Klaus Werner', role: 'Zettel'},
+    {actor: 'Peter Schulz', role: 'Herzog Theseus'},
+    {actor: 'Emma König', role: 'Hippolyta'},
   ],
   performances: [
     {
-      id: "1",
-      date: "15. Februar 2025",
-      time: "19:30 Uhr",
-      location: "Kulturzentrum Weyhe",
-      address: "Hauptstraße 45, 28844 Weyhe",
+      id: '1',
+      date: '15. Februar 2025',
+      time: '19:30 Uhr',
+      location: 'Kulturzentrum Weyhe',
+      address: 'Hauptstraße 45, 28844 Weyhe',
       availableSeats: 45,
       totalSeats: 120,
     },
     {
-      id: "2",
-      date: "16. Februar 2025",
-      time: "15:00 Uhr",
-      location: "Kulturzentrum Weyhe",
-      address: "Hauptstraße 45, 28844 Weyhe",
+      id: '2',
+      date: '16. Februar 2025',
+      time: '15:00 Uhr',
+      location: 'Kulturzentrum Weyhe',
+      address: 'Hauptstraße 45, 28844 Weyhe',
       availableSeats: 78,
       totalSeats: 120,
     },
     {
-      id: "3",
-      date: "22. Februar 2025",
-      time: "19:30 Uhr",
-      location: "Gemeindehaus Leeste",
-      address: "Kirchstraße 12, 28844 Weyhe",
+      id: '3',
+      date: '22. Februar 2025',
+      time: '19:30 Uhr',
+      location: 'Gemeindehaus Leeste',
+      address: 'Kirchstraße 12, 28844 Weyhe',
       availableSeats: 12,
       totalSeats: 80,
     },
     {
-      id: "4",
-      date: "23. Februar 2025",
-      time: "19:30 Uhr",
-      location: "Gemeindehaus Leeste",
-      address: "Kirchstraße 12, 28844 Weyhe",
+      id: '4',
+      date: '23. Februar 2025',
+      time: '19:30 Uhr',
+      location: 'Gemeindehaus Leeste',
+      address: 'Kirchstraße 12, 28844 Weyhe',
       availableSeats: 0,
       totalSeats: 80,
     },
   ],
   pricing: [
-    { category: "Normal", price: 12 },
-    { category: "Ermäßigt", description: "Schüler, Studenten, Schwerbehinderte", price: 8 },
-    { category: "Kinder", description: "bis 12 Jahre", price: 5 },
-    { category: "Familienkarte", description: "2 Erwachsene + 2 Kinder", price: 30 },
+    {category: 'Normal', price: 12},
+    {category: 'Ermäßigt', description: 'Schüler, Studenten, Schwerbehinderte', price: 8},
+    {category: 'Kinder', description: 'bis 12 Jahre', price: 5},
+    {category: 'Familienkarte', description: '2 Erwachsene + 2 Kinder', price: 30},
   ],
-};
+}
 
 export default function CurrentPlayPage() {
-  const { id } = useParams<{ id: string }>();
-  const isArchive = !!id;
+  const {id} = useParams<{id: string}>()
+  const isArchive = !!id
 
-  const { data: currentPlayData, isLoading: currentLoading } = useCurrentPlay();
-  const { data: archivedPlayData, isLoading: archiveLoading } = usePlayBySlug(id);
+  const {data: currentPlayData, isLoading: currentLoading} = useCurrentPlay()
+  const {data: archivedPlayData, isLoading: archiveLoading} = usePlayBySlug(id)
 
-  const isConfigured = isSanityConfigured();
-  const isLoading = isArchive ? archiveLoading : currentLoading;
-  const sanityPlay = isArchive ? archivedPlayData : currentPlayData;
+  const isConfigured = isSanityConfigured()
+  const isLoading = isArchive ? archiveLoading : currentLoading
+  const sanityPlay = isArchive ? archivedPlayData : currentPlayData
 
   // Use mock data if Sanity is not configured
-  const playData = sanityPlay || (!isConfigured ? mockCurrentPlay : null);
+  const playData = sanityPlay || (!isConfigured ? mockCurrentPlay : null)
 
   if (isLoading) {
     return (
@@ -102,7 +102,7 @@ export default function CurrentPlayPage() {
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       </Layout>
-    );
+    )
   }
 
   if (!playData) {
@@ -119,58 +119,68 @@ export default function CurrentPlayPage() {
           </div>
         </div>
       </Layout>
-    );
+    )
   }
 
   // Normalize data structure for both Sanity and mock data
-  const isSanityData = "slug" in playData;
-  const title = playData.title;
-  const author = playData.author || "";
-  const director = isSanityData ? (playData as typeof sanityPlay)?.director : mockCurrentPlay.director;
-  const coverImage = isSanityData && (playData as typeof sanityPlay)?.coverImage
-    ? urlFor((playData as typeof sanityPlay)!.coverImage).width(1200).url()
-    : mockCurrentPlay.coverImage;
-  const description = isSanityData
-    ? (playData as typeof sanityPlay)?.description
-    : null;
-  const descriptionText = !isSanityData ? mockCurrentPlay.description : null;
+  const isSanityData = 'slug' in playData
+  const title = playData.title
+  const author = playData.author || ''
+  const director = isSanityData
+    ? (playData as typeof sanityPlay)?.director
+    : mockCurrentPlay.director
+  const coverImage =
+    isSanityData && (playData as typeof sanityPlay)?.coverImage
+      ? urlFor((playData as typeof sanityPlay)!.coverImage)
+          .width(1200)
+          .url()
+      : mockCurrentPlay.coverImage
+  const description = isSanityData ? (playData as typeof sanityPlay)?.description : null
+  const descriptionText = !isSanityData ? mockCurrentPlay.description : null
   const cast = isSanityData
     ? (playData as typeof sanityPlay)?.cast?.map((c) => ({
         actor: c.actorName,
         role: c.roleName,
         photo: c.photo ? urlFor(c.photo).width(100).url() : undefined,
       })) || []
-    : mockCurrentPlay.cast;
+    : mockCurrentPlay.cast
   const performances = isSanityData
     ? (playData as typeof sanityPlay)?.performances?.map((p) => ({
         id: p._key,
-        date: format(new Date(p.date), "d. MMMM yyyy", { locale: de }),
+        date: format(new Date(p.date), 'd. MMMM yyyy', {locale: de}),
         time: p.time,
-        location: p.location,
-        address: "",
+        location: p.location?.name || p.location?.city || 'Ort nicht angegeben',
+        address: [p.location?.street, p.location?.postalCode, p.location?.city]
+          .filter(Boolean)
+          .join(', '),
         availableSeats: p.ticketsAvailable ?? 999,
         totalSeats: 999,
+        ticketPrices: p.ticketPrices?.map((t) => ({
+          category: t.category,
+          price: t.price,
+          description: t.description,
+        })) || [],
+        remarks: p.location?.remarks,
       })) || []
-    : mockCurrentPlay.performances;
+    : mockCurrentPlay.performances
+  
+  // For Sanity data, get pricing from the first performance (or could aggregate all performances)
   const pricing = isSanityData
-    ? (playData as typeof sanityPlay)?.ticketPrices?.map((t) => ({
+    ? (playData as typeof sanityPlay)?.performances?.[0]?.ticketPrices?.map((t) => ({
         category: t.category,
         price: t.price,
         description: t.description,
       })) || []
-    : mockCurrentPlay.pricing;
-  const isCurrent = isSanityData ? (playData as typeof sanityPlay)?.isCurrent : true;
+    : mockCurrentPlay.pricing
+  // Determine if this is the current play (not an archived one)
+  const isCurrent = !isArchive
 
   return (
     <Layout>
       {/* Hero */}
       <section className="relative min-h-[60vh] flex items-end overflow-hidden">
         <div className="absolute inset-0">
-          <img
-            src={coverImage}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
+          <img src={coverImage} alt={title} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         </div>
         <div className="relative z-10 container mx-auto px-4 pb-12">
@@ -210,15 +220,15 @@ export default function CurrentPlayPage() {
                   Über das Stück
                 </h2>
                 <div className="prose prose-invert prose-lg max-w-none">
-                  {isSanityData && description ? (
-                    renderBlockContent(description)
-                  ) : descriptionText ? (
-                    descriptionText.split("\n\n").map((paragraph, index) => (
-                      <p key={index} className="text-muted-foreground leading-relaxed mb-4">
-                        {paragraph}
-                      </p>
-                    ))
-                  ) : null}
+                  {isSanityData && description
+                    ? renderBlockContent(description)
+                    : descriptionText
+                      ? descriptionText.split('\n\n').map((paragraph, index) => (
+                          <p key={index} className="text-muted-foreground leading-relaxed mb-4">
+                            {paragraph}
+                          </p>
+                        ))
+                      : null}
                 </div>
               </section>
 
@@ -234,7 +244,7 @@ export default function CurrentPlayPage() {
                         key={index}
                         className="flex items-center gap-4 p-4 rounded-lg bg-card border border-border/50"
                       >
-                        {"photo" in member && member.photo ? (
+                        {'photo' in member && member.photo ? (
                           <img
                             src={member.photo as string}
                             alt={member.actor}
@@ -285,6 +295,9 @@ export default function CurrentPlayPage() {
                               {performance.address && (
                                 <p className="text-sm">{performance.address}</p>
                               )}
+                              {'remarks' in performance && performance.remarks && (
+                                <p className="text-sm italic mt-1">{performance.remarks}</p>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -302,7 +315,10 @@ export default function CurrentPlayPage() {
                               </Button>
                             </>
                           ) : (
-                            <Badge variant="secondary" className="bg-destructive/20 text-destructive">
+                            <Badge
+                              variant="secondary"
+                              className="bg-destructive/20 text-destructive"
+                            >
                               Ausverkauft
                             </Badge>
                           )}
@@ -350,12 +366,10 @@ export default function CurrentPlayPage() {
                       Tickets sichern
                     </h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Wählen Sie oben einen Termin und buchen Sie Ihre Karten online oder 
+                      Wählen Sie oben einen Termin und buchen Sie Ihre Karten online oder
                       kontaktieren Sie uns telefonisch.
                     </p>
-                    <Button className="w-full font-semibold shadow-gold">
-                      Jetzt Buchen
-                    </Button>
+                    <Button className="w-full font-semibold shadow-gold">Jetzt Buchen</Button>
                     <p className="text-xs text-muted-foreground text-center mt-3">
                       Bezahlung per Überweisung, Giropay oder Kreditkarte
                     </p>
@@ -367,5 +381,5 @@ export default function CurrentPlayPage() {
         </div>
       </div>
     </Layout>
-  );
+  )
 }

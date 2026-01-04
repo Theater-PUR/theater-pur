@@ -2,7 +2,7 @@
 
 // Plays
 export const currentPlayQuery = `
-  *[_type == "play" && isCurrent == true][0] {
+  *[_type == "siteSettings"][0].currentPlay-> {
     _id,
     title,
     slug,
@@ -12,7 +12,6 @@ export const currentPlayQuery = `
     author,
     director,
     year,
-    isCurrent,
     cast[] {
       _key,
       actorName,
@@ -23,18 +22,24 @@ export const currentPlayQuery = `
       _key,
       date,
       time,
-      location,
-      ticketsAvailable
-    },
-    ticketPrices[] {
-      _key,
-      category,
-      price,
-      description
+      location {
+        name,
+        street,
+        postalCode,
+        city,
+        remarks
+      },
+      ticketsAvailable,
+      ticketPrices[] {
+        _key,
+        category,
+        price,
+        description
+      }
     },
     gallery
   }
-`;
+`
 
 export const allPlaysQuery = `
   *[_type == "play"] | order(year desc) {
@@ -43,13 +48,12 @@ export const allPlaysQuery = `
     slug,
     coverImage,
     year,
-    isCurrent,
     author
   }
-`;
+`
 
 export const archivedPlaysQuery = `
-  *[_type == "play" && isCurrent != true] | order(year desc) {
+  *[_type == "play" && _id != *[_type == "siteSettings"][0].currentPlay._ref] | order(year desc) {
     _id,
     title,
     slug,
@@ -57,7 +61,7 @@ export const archivedPlaysQuery = `
     year,
     author
   }
-`;
+`
 
 export const playBySlugQuery = `
   *[_type == "play" && slug.current == $slug][0] {
@@ -70,7 +74,6 @@ export const playBySlugQuery = `
     author,
     director,
     year,
-    isCurrent,
     cast[] {
       _key,
       actorName,
@@ -81,18 +84,24 @@ export const playBySlugQuery = `
       _key,
       date,
       time,
-      location,
-      ticketsAvailable
-    },
-    ticketPrices[] {
-      _key,
-      category,
-      price,
-      description
+      location {
+        name,
+        street,
+        postalCode,
+        city,
+        remarks
+      },
+      ticketsAvailable,
+      ticketPrices[] {
+        _key,
+        category,
+        price,
+        description
+      }
     },
     gallery
   }
-`;
+`
 
 // News
 export const allNewsQuery = `
@@ -105,7 +114,7 @@ export const allNewsQuery = `
     publishedAt,
     category
   }
-`;
+`
 
 export const latestNewsQuery = `
   *[_type == "newsPost"] | order(publishedAt desc)[0...3] {
@@ -117,7 +126,7 @@ export const latestNewsQuery = `
     publishedAt,
     category
   }
-`;
+`
 
 export const newsBySlugQuery = `
   *[_type == "newsPost" && slug.current == $slug][0] {
@@ -130,7 +139,7 @@ export const newsBySlugQuery = `
     publishedAt,
     category
   }
-`;
+`
 
 // Team
 export const teamMembersQuery = `
@@ -141,7 +150,7 @@ export const teamMembersQuery = `
     bio,
     photo
   }
-`;
+`
 
 // Site Settings
 export const siteSettingsQuery = `
@@ -152,6 +161,7 @@ export const siteSettingsQuery = `
     contactEmail,
     contactPhone,
     address,
-    socialLinks
+    socialLinks,
+    currentPlay
   }
-`;
+`
