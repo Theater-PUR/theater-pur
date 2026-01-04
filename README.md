@@ -106,3 +106,5 @@ This project uses a single repository for both frontend and CMS:
 - ✅ Simplified dependency management
 - ✅ Easier deployment and CI/CD
 - ✅ No need to sync changes between repos
+
+changes
