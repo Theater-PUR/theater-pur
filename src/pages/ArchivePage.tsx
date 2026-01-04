@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Layout } from "@/components/layout";
 import { SectionHeader } from "@/components/SectionHeader";
 import { PlayCard, type Play } from "@/components/PlayCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
+import { useArchivedPlays } from "@/hooks/useSanity";
+import { isSanityConfigured, urlFor } from "@/lib/sanity";
+import { getPlainText } from "@/lib/blockContent";
 
-// Mock data - will be replaced with Sanity CMS
-const archivePlays: Play[] = [
+// Mock data - used when Sanity is not configured
+const mockArchivePlays: Play[] = [
   {
     id: "der-zerbrochene-krug-2023",
     title: "Der zerbrochene Krug",
@@ -81,10 +85,30 @@ const archivePlays: Play[] = [
   },
 ];
 
-const years = [...new Set(archivePlays.map((play) => play.year))].sort((a, b) => b - a);
-
 export default function ArchivePage() {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const { data: sanityPlays, isLoading } = useArchivedPlays();
+  const isConfigured = isSanityConfigured();
+
+  // Transform Sanity data to component format
+  const archivePlays: Play[] = useMemo(() => {
+    if (sanityPlays && sanityPlays.length > 0) {
+      return sanityPlays.map((play) => ({
+        id: play.slug.current,
+        title: play.title,
+        subtitle: play.author ? `von ${play.author}` : undefined,
+        description: getPlainText(play.description),
+        coverImage: play.coverImage ? urlFor(play.coverImage).width(600).url() : undefined,
+        year: play.year,
+      }));
+    }
+    return isConfigured ? [] : mockArchivePlays;
+  }, [sanityPlays, isConfigured]);
+
+  const years = useMemo(
+    () => [...new Set(archivePlays.map((play) => play.year))].sort((a, b) => b - a),
+    [archivePlays]
+  );
 
   const filteredPlays = selectedYear
     ? archivePlays.filter((play) => play.year === selectedYear)
@@ -102,49 +126,57 @@ export default function ArchivePage() {
           />
 
           {/* Year Filter */}
-          <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelectedYear(null)}
-              className={cn(
-                "border-border/50",
-                selectedYear === null && "bg-primary text-primary-foreground border-primary"
-              )}
-            >
-              Alle Jahre
-            </Button>
-            {years.map((year) => (
+          {years.length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
               <Button
-                key={year}
                 variant="outline"
                 size="sm"
-                onClick={() => setSelectedYear(year)}
+                onClick={() => setSelectedYear(null)}
                 className={cn(
                   "border-border/50",
-                  selectedYear === year && "bg-primary text-primary-foreground border-primary"
+                  selectedYear === null && "bg-primary text-primary-foreground border-primary"
                 )}
               >
-                {year}
+                Alle Jahre
               </Button>
-            ))}
-          </div>
+              {years.map((year) => (
+                <Button
+                  key={year}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedYear(year)}
+                  className={cn(
+                    "border-border/50",
+                    selectedYear === year && "bg-primary text-primary-foreground border-primary"
+                  )}
+                >
+                  {year}
+                </Button>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
       {/* Archive Grid */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredPlays.map((play) => (
-              <PlayCard key={play.id} play={play} variant="archive" />
-            ))}
-          </div>
-
-          {filteredPlays.length === 0 && (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : filteredPlays.length > 0 ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredPlays.map((play) => (
+                <PlayCard key={play.id} play={play} variant="archive" />
+              ))}
+            </div>
+          ) : (
             <div className="text-center py-16">
               <p className="text-muted-foreground text-lg">
-                Keine Aufführungen für dieses Jahr gefunden.
+                {selectedYear
+                  ? "Keine Aufführungen für dieses Jahr gefunden."
+                  : "Noch keine archivierten Aufführungen."}
               </p>
             </div>
           )}
