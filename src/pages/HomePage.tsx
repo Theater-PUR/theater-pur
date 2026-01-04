@@ -6,7 +6,7 @@ import {SectionHeader} from '@/components/SectionHeader'
 import {Button} from '@/components/ui/button'
 import {Link} from 'react-router-dom'
 import {ArrowRight, Users, Calendar, Award, Loader2} from 'lucide-react'
-import {useCurrentPlay, useLatestNews} from '@/hooks/useSanity'
+import {useCurrentPlay, useLatestNews, useSiteSettings} from '@/hooks/useSanity'
 import {isSanityConfigured, urlFor} from '@/lib/sanity'
 import {getPlainText} from '@/lib/blockContent'
 import {format} from 'date-fns'
@@ -58,17 +58,21 @@ const mockRecentNews: NewsCardType[] = [
   },
 ]
 
-const stats = [
-  {icon: Calendar, value: '15+', label: 'Jahre Theatertradition'},
-  {icon: Users, value: '25', label: 'Aktive Mitglieder'},
-  {icon: Award, value: '30+', label: 'Aufgeführte Stücke'},
-]
-
 export default function HomePage() {
   const {data: sanityCurrentPlay, isLoading: playLoading} = useCurrentPlay()
   const {data: sanityNews, isLoading: newsLoading} = useLatestNews()
+  const {data: settings} = useSiteSettings()
 
   const isConfigured = isSanityConfigured()
+
+  // Debug: Log settings to console to verify data loading
+  console.log('Site Settings loaded:', settings)
+
+  const stats = [
+    {icon: Calendar, value: settings?.statsYears || '15+', label: 'Jahre Theatertradition'},
+    {icon: Users, value: settings?.statsMembers || '25', label: 'Aktive Mitglieder'},
+    {icon: Award, value: settings?.statsProductions || '30+', label: 'Aufgeführte Stücke'},
+  ]
 
   // Transform Sanity data to component format
   const currentPlay: PlayCardType | null = sanityCurrentPlay
@@ -114,13 +118,16 @@ export default function HomePage() {
     <Layout>
       {/* Hero Section */}
       <Hero
-        subtitle="Willkommen bei Theaterpur Weyhe"
-        title="Die Bühne ist bereitet"
-        description="Erleben Sie unvergessliche Theatermomente. Leidenschaft, Kunst und Gemeinschaft vereint auf einer Bühne."
-        ctaText="Tickets Sichern"
-        ctaLink="/aktuell"
-        secondaryCtaText="Mehr Erfahren"
-        secondaryCtaLink="/ueber-uns"
+        subtitle={settings?.heroSubtitle || 'Willkommen bei Theaterpur Weyhe'}
+        title={settings?.heroTitle || 'Die Bühne ist bereitet'}
+        description={
+          settings?.heroDescription ||
+          'Erleben Sie unvergessliche Theatermomente. Leidenschaft, Kunst und Gemeinschaft vereint auf einer Bühne.'
+        }
+        ctaText={settings?.heroCtaText || 'Tickets Sichern'}
+        ctaLink={settings?.heroCtaLink || '/aktuell'}
+        secondaryCtaText={settings?.heroSecondaryCtaText || 'Mehr Erfahren'}
+        secondaryCtaLink={settings?.heroSecondaryCtaLink || '/ueber-uns'}
       />
 
       {/* Current Play Section */}
@@ -208,11 +215,11 @@ export default function HomePage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
-              Werden Sie Teil unserer Theaterfamilie
+              {settings?.footerCtaTitle || 'Werden Sie Teil unserer Theaterfamilie'}
             </h2>
             <p className="text-muted-foreground text-lg">
-              Sie haben Lust auf Theater? Ob auf der Bühne oder hinter den Kulissen – wir freuen uns
-              immer über neue Gesichter und Talente.
+              {settings?.footerCtaDescription ||
+                'Sie haben Lust auf Theater? Ob auf der Bühne oder hinter den Kulissen – wir freuen uns immer über neue Gesichter und Talente.'}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Button asChild size="lg" className="font-semibold shadow-gold">

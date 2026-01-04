@@ -103,18 +103,45 @@ export interface TeamMember {
 export interface SiteSettings {
   _id: string
   _type: 'siteSettings'
+  // General
   title: string
   description: string
-  contactEmail: string
+  currentPlay?: {
+    _ref: string
+    _type: 'reference'
+  }
+  // Hero
+  heroSubtitle?: string
+  heroTitle?: string
+  heroDescription?: string
+  heroCtaText?: string
+  heroCtaLink?: string
+  heroSecondaryCtaText?: string
+  heroSecondaryCtaLink?: string
+  // Navigation
+  navCtaText?: string
+  navCtaLink?: string
+  // Contact
+  contactEmail?: string
   contactPhone?: string
-  address?: string
+  addressStreet?: string
+  addressPostalCode?: string
+  addressCity?: string
   socialLinks?: {
     facebook?: string
     instagram?: string
     youtube?: string
   }
-  currentPlay?: {
-    _ref: string
-    _type: 'reference'
-  }
+  // About
+  aboutTheaterName?: string
+  aboutTagline?: string
+  aboutDescription?: string
+  aboutStory?: SanityBlock[]
+  statsYears?: string
+  statsMembers?: string
+  statsProductions?: string
+  // Footer
+  footerCtaTitle?: string
+  footerCtaDescription?: string
+  copyrightText?: string
 }

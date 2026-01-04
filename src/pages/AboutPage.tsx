@@ -1,36 +1,75 @@
-import { Layout } from "@/components/layout";
-import { SectionHeader } from "@/components/SectionHeader";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Mail, MapPin, Phone, Theater, Heart, Users } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
+import {Layout} from '@/components/layout'
+import {SectionHeader} from '@/components/SectionHeader'
+import {Button} from '@/components/ui/button'
+import {Input} from '@/components/ui/input'
+import {Textarea} from '@/components/ui/textarea'
+import {Label} from '@/components/ui/label'
+import {Mail, MapPin, Phone, Theater, Heart, Users} from 'lucide-react'
+import {useState} from 'react'
+import {toast} from 'sonner'
+import {useSiteSettings, useTeamMembers} from '@/hooks/useSanity'
+import {urlFor} from '@/lib/sanity'
+import {renderBlockContent} from '@/lib/blockContent'
 
-const teamMembers = [
-  { name: "Maria Schmidt", role: "Regie & Vorstand", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=80" },
-  { name: "Thomas Müller", role: "Schauspieler & Technik", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80" },
-  { name: "Anna Weber", role: "Schauspielerin & Kostüm", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&q=80" },
-  { name: "Felix Braun", role: "Schauspieler", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&q=80" },
-  { name: "Laura Schmidt", role: "Schauspielerin", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80" },
-  { name: "Klaus Werner", role: "Bühnenbau & Schauspieler", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&q=80" },
-];
+const mockTeamMembers = [
+  {
+    name: 'Maria Schmidt',
+    role: 'Regie & Vorstand',
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=80',
+  },
+  {
+    name: 'Thomas Müller',
+    role: 'Schauspieler & Technik',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80',
+  },
+  {
+    name: 'Anna Weber',
+    role: 'Schauspielerin & Kostüm',
+    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&q=80',
+  },
+  {
+    name: 'Felix Braun',
+    role: 'Schauspieler',
+    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&q=80',
+  },
+  {
+    name: 'Laura Schmidt',
+    role: 'Schauspielerin',
+    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80',
+  },
+  {
+    name: 'Klaus Werner',
+    role: 'Bühnenbau & Schauspieler',
+    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&q=80',
+  },
+]
 
 export default function AboutPage() {
+  const {data: settings} = useSiteSettings()
+  const {data: sanityTeamMembers} = useTeamMembers()
+
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  })
+
+  const teamMembers =
+    sanityTeamMembers && sanityTeamMembers.length > 0
+      ? sanityTeamMembers.map((member) => ({
+          name: member.name,
+          role: member.role,
+          image: member.photo ? urlFor(member.photo).width(300).url() : undefined,
+        }))
+      : mockTeamMembers
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     // Placeholder for form submission
-    toast.success("Nachricht gesendet! Wir melden uns bei Ihnen.");
-    setFormData({ name: "", email: "", subject: "", message: "" });
-  };
+    toast.success('Nachricht gesendet! Wir melden uns bei Ihnen.')
+    setFormData({name: '', email: '', subject: '', message: ''})
+  }
 
   return (
     <Layout>
@@ -40,8 +79,11 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 relative z-10">
           <SectionHeader
             subtitle="Über Uns"
-            title="Theaterpur Weyhe"
-            description="Seit über 15 Jahren bringen wir Leidenschaft, Kunst und Gemeinschaft auf die Bühne. Unser Amateurtheater vereint Menschen aller Altersgruppen, die eine gemeinsame Liebe zum Theater teilen."
+            title={settings?.aboutTheaterName || 'Theaterpur Weyhe'}
+            description={
+              settings?.aboutDescription ||
+              'Seit über 15 Jahren bringen wir Leidenschaft, Kunst und Gemeinschaft auf die Bühne. Unser Amateurtheater vereint Menschen aller Altersgruppen, die eine gemeinsame Liebe zum Theater teilen.'
+            }
           />
         </div>
       </section>
@@ -54,25 +96,31 @@ export default function AboutPage() {
               <h2 className="font-display text-3xl font-bold text-foreground mb-6">
                 Unsere Geschichte
               </h2>
-              <div className="space-y-4 text-muted-foreground leading-relaxed">
-                <p>
-                  Was als kleine Gruppe theaterbegeisterter Freunde begann, ist heute eine 
-                  lebendige Gemeinschaft von über 25 aktiven Mitgliedern. Theaterpur Weyhe 
-                  wurde gegründet aus der Überzeugung, dass Theater Menschen zusammenbringt 
-                  und Geschichten erzählt, die berühren.
-                </p>
-                <p>
-                  In über 30 Produktionen haben wir unser Publikum zum Lachen, Weinen und 
-                  Nachdenken gebracht. Von klassischen Komödien über moderne Dramen bis hin 
-                  zu eigenen Adaptionen – wir scheuen keine Herausforderung.
-                </p>
-                <p>
-                  Unsere Aufführungen finden an verschiedenen Spielstätten in und um Weyhe 
-                  statt. Jede Produktion ist ein Gemeinschaftsprojekt, bei dem jeder sein 
-                  Talent einbringt – ob auf der Bühne, beim Bühnenbau, bei Kostümen oder 
-                  in der Organisation.
-                </p>
-              </div>
+              {settings?.aboutStory ? (
+                <div className="space-y-4 text-muted-foreground leading-relaxed prose prose-slate max-w-none">
+                  {renderBlockContent(settings.aboutStory)}
+                </div>
+              ) : (
+                <div className="space-y-4 text-muted-foreground leading-relaxed">
+                  <p>
+                    Was als kleine Gruppe theaterbegeisterter Freunde begann, ist heute eine
+                    lebendige Gemeinschaft von über 25 aktiven Mitgliedern. Theaterpur Weyhe wurde
+                    gegründet aus der Überzeugung, dass Theater Menschen zusammenbringt und
+                    Geschichten erzählt, die berühren.
+                  </p>
+                  <p>
+                    In über 30 Produktionen haben wir unser Publikum zum Lachen, Weinen und
+                    Nachdenken gebracht. Von klassischen Komödien über moderne Dramen bis hin zu
+                    eigenen Adaptionen – wir scheuen keine Herausforderung.
+                  </p>
+                  <p>
+                    Unsere Aufführungen finden an verschiedenen Spielstätten in und um Weyhe statt.
+                    Jede Produktion ist ein Gemeinschaftsprojekt, bei dem jeder sein Talent
+                    einbringt – ob auf der Bühne, beim Bühnenbau, bei Kostümen oder in der
+                    Organisation.
+                  </p>
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
@@ -85,14 +133,18 @@ export default function AboutPage() {
                 </div>
                 <div className="aspect-square rounded-lg bg-primary/10 border border-primary/30 flex flex-col items-center justify-center p-6 text-center">
                   <Theater className="w-10 h-10 text-primary mb-3" />
-                  <p className="font-display text-2xl font-bold text-foreground">30+</p>
+                  <p className="font-display text-2xl font-bold text-foreground">
+                    {settings?.statsProductions || '30+'}
+                  </p>
                   <p className="text-sm text-muted-foreground">Produktionen</p>
                 </div>
               </div>
               <div className="space-y-4 pt-8">
                 <div className="aspect-square rounded-lg bg-velvet/30 border border-velvet/50 flex flex-col items-center justify-center p-6 text-center">
                   <Heart className="w-10 h-10 text-primary mb-3" />
-                  <p className="font-display text-2xl font-bold text-foreground">15+</p>
+                  <p className="font-display text-2xl font-bold text-foreground">
+                    {settings?.statsYears || '15+'}
+                  </p>
                   <p className="text-sm text-muted-foreground">Jahre</p>
                 </div>
                 <div className="aspect-[3/4] rounded-lg overflow-hidden">
@@ -153,46 +205,59 @@ export default function AboutPage() {
                 align="left"
               />
               <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-5 h-5 text-primary" />
+                {(settings?.addressStreet ||
+                  settings?.addressPostalCode ||
+                  settings?.addressCity) && (
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-1">Adresse</h4>
+                      <p className="text-muted-foreground">
+                        {settings?.addressStreet && (
+                          <>
+                            {settings.addressStreet}
+                            <br />
+                          </>
+                        )}
+                        {settings?.addressPostalCode} {settings?.addressCity}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-1">Adresse</h4>
-                    <p className="text-muted-foreground">
-                      Musterstraße 123<br />
-                      28844 Weyhe
-                    </p>
+                )}
+                {settings?.contactEmail && (
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Mail className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-1">E-Mail</h4>
+                      <a
+                        href={`mailto:${settings.contactEmail}`}
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {settings.contactEmail}
+                      </a>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-5 h-5 text-primary" />
+                )}
+                {settings?.contactPhone && (
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Phone className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-1">Telefon</h4>
+                      <a
+                        href={`tel:${settings.contactPhone.replace(/\s/g, '')}`}
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {settings.contactPhone}
+                      </a>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-1">E-Mail</h4>
-                    <a
-                      href="mailto:info@theaterpur-weyhe.de"
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      info@theaterpur-weyhe.de
-                    </a>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-1">Telefon</h4>
-                    <a
-                      href="tel:+4942030000000"
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      +49 4203 00000 00
-                    </a>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -205,7 +270,7 @@ export default function AboutPage() {
                     <Input
                       id="name"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
                       placeholder="Ihr Name"
                       required
                     />
@@ -216,7 +281,7 @@ export default function AboutPage() {
                       id="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
                       placeholder="ihre@email.de"
                       required
                     />
@@ -227,7 +292,7 @@ export default function AboutPage() {
                   <Input
                     id="subject"
                     value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    onChange={(e) => setFormData({...formData, subject: e.target.value})}
                     placeholder="Worum geht es?"
                     required
                   />
@@ -237,7 +302,7 @@ export default function AboutPage() {
                   <Textarea
                     id="message"
                     value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    onChange={(e) => setFormData({...formData, message: e.target.value})}
                     placeholder="Ihre Nachricht an uns..."
                     rows={5}
                     required
@@ -252,5 +317,5 @@ export default function AboutPage() {
         </div>
       </section>
     </Layout>
-  );
+  )
 }

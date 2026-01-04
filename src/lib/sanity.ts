@@ -5,14 +5,13 @@ import imageUrlBuilder from '@sanity/image-url'
 // You'll need to create a Sanity project and add your project ID and dataset
 const projectId = '3aql3s3c'
 const dataset = 'production'
-const apiVersion = '2024-01-01'
 
 export const sanityClient = createClient({
   projectId,
   dataset,
-  apiVersion,
+  apiVersion: '2026-01-01',
   useCdn: true, // Use CDN for faster responses in production
-  perspective: 'published', // Only show published content
+  perspective: 'published', // Show drafts in development
 })
 
 // Image URL builder for Sanity images
