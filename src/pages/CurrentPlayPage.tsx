@@ -155,15 +155,16 @@ export default function CurrentPlayPage() {
           .join(', '),
         availableSeats: p.ticketsAvailable ?? 999,
         totalSeats: 999,
-        ticketPrices: p.ticketPrices?.map((t) => ({
-          category: t.category,
-          price: t.price,
-          description: t.description,
-        })) || [],
+        ticketPrices:
+          p.ticketPrices?.map((t) => ({
+            category: t.category,
+            price: t.price,
+            description: t.description,
+          })) || [],
         remarks: p.location?.remarks,
       })) || []
     : mockCurrentPlay.performances
-  
+
   // For Sanity data, get pricing from the first performance (or could aggregate all performances)
   const pricing = isSanityData
     ? (playData as typeof sanityPlay)?.performances?.[0]?.ticketPrices?.map((t) => ({

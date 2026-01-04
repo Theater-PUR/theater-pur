@@ -85,7 +85,10 @@ export default function HomePage() {
         nextPerformance: sanityCurrentPlay.performances?.[0]
           ? {
               date: `${format(new Date(sanityCurrentPlay.performances[0].date), 'd. MMMM yyyy', {locale: de})}, ${sanityCurrentPlay.performances[0].time}`,
-              location: sanityCurrentPlay.performances[0].location?.name || sanityCurrentPlay.performances[0].location?.city || 'Ort nicht angegeben',
+              location:
+                sanityCurrentPlay.performances[0].location?.name ||
+                sanityCurrentPlay.performances[0].location?.city ||
+                'Ort nicht angegeben',
             }
           : undefined,
       }
