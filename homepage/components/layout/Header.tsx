@@ -16,28 +16,30 @@ const navLinks = [
 ];
 
 export interface HeaderProps {
-  brandName?: string;
-  brandTagline?: string;
-  primaryCtaText?: string;
-  primaryCtaLink?: string;
+  brandName: string;
+  brandTagline: string;
+  primaryCtaText: string;
+  primaryCtaLink: string;
   isDraftMode?: boolean;
 }
 
 export function Header({
-  brandName = "Theaterpur",
-  brandTagline = "Weyhe",
-  primaryCtaText = "Tickets Sichern",
-  primaryCtaLink = "/aktuell",
+  brandName,
+  brandTagline,
+  primaryCtaText,
+  primaryCtaLink,
   isDraftMode = false,
 }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
   return (
-    <header className={cn(
-      "fixed left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50",
-      isDraftMode ? "top-12" : "top-0"
-    )}>
+    <header
+      className={cn(
+        "fixed left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50",
+        isDraftMode ? "top-12" : "top-0"
+      )}
+    >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}

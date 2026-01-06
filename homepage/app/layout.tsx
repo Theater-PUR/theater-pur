@@ -23,15 +23,11 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-const defaultTitle = "Theaterpur Weyhe - Leidenschaft für Theater";
-const defaultDescription =
-  "Erleben Sie unvergessliche Theatermomente. Leidenschaft, Kunst und Gemeinschaft vereint auf einer Bühne.";
-
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings({ stega: false });
   return {
-    title: settings?.title ?? defaultTitle,
-    description: settings?.description ?? defaultDescription,
+    title: settings?.title,
+    description: settings?.description,
   };
 }
 
@@ -45,10 +41,14 @@ export default async function RootLayout({
 
   return (
     <html lang="de" className="dark">
-      <body className={`${inter.variable} ${playfair.variable} antialiased bg-background`}>
+      <body
+        className={`${inter.variable} ${playfair.variable} antialiased bg-background`}
+      >
         {isDraftMode && <DraftModeIndicator />}
         <TooltipProvider>
-          <AppShell settings={settings} isDraftMode={isDraftMode}>{children}</AppShell>
+          <AppShell settings={settings} isDraftMode={isDraftMode}>
+            {children}
+          </AppShell>
           <Toaster />
           <Sonner />
         </TooltipProvider>

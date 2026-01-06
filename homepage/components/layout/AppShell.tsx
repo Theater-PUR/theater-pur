@@ -22,25 +22,26 @@ export function AppShell({ children, settings, isDraftMode }: AppShellProps) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header
-        brandName={settings?.brandName}
-        brandTagline={settings?.brandTagline}
-        primaryCtaText={settings?.primaryCtaText}
-        primaryCtaLink={settings?.primaryCtaLink}
+        brandName={settings?.brandName || ""}
+        brandTagline={settings?.brandTagline || ""}
+        primaryCtaText={settings?.primaryCtaText || ""}
+        primaryCtaLink={settings?.primaryCtaLink || ""}
         isDraftMode={isDraftMode}
       />
-      <main className={`flex-1 ${isDraftMode ? "pt-[7.5rem]" : "pt-20"}`}>{children}</main>
+      <main className={`flex-1 ${isDraftMode ? "pt-[7.5rem]" : "pt-20"}`}>
+        {children}
+      </main>
       <Footer
-        brandName={settings?.brandName}
-        brandTagline={settings?.brandTagline}
-        footerDescription={settings?.footerDescription}
-        footerInfoTitle={settings?.footerInfoTitle}
-        footerInfoDescription={settings?.footerInfoDescription}
-        contactEmail={settings?.contactEmail}
-        contactPhone={settings?.contactPhone}
-        addressStreet={settings?.addressStreet}
-        addressPostalCode={settings?.addressPostalCode}
-        addressCity={settings?.addressCity}
-        copyrightText={settings?.copyrightText}
+        brandName={settings?.brandName || ""}
+        brandTagline={settings?.brandTagline || ""}
+        footerDescription={settings?.footerDescription || ""}
+        footerInfoTitle={settings?.footerInfoTitle || ""}
+        footerInfoDescription={settings?.footerInfoDescription || ""}
+        contactEmail={settings?.contactEmail || ""}
+        contactPhone={settings?.contactPhone || ""}
+        addressStreet={settings?.addressStreet || ""}
+        addressPostalCode={settings?.addressPostalCode || ""}
+        addressCity={settings?.addressCity || ""}
       />
     </div>
   );

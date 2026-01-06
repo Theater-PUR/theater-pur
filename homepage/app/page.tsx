@@ -97,42 +97,35 @@ export default async function HomePage() {
     <>
       {/* Hero Section */}
       <Hero
-        subtitle={settings?.heroSubtitle ?? "Willkommen bei Theaterpur Weyhe"}
-        title={settings?.heroTitle ?? "Die Bühne ist bereitet"}
-        description={
-          settings?.heroDescription ??
-          "Erleben Sie unvergessliche Theatermomente. Leidenschaft, Kunst und Gemeinschaft vereint auf einer Bühne."
-        }
+        subtitle={settings?.heroSubtitle}
+        title={settings?.heroTitle || ""}
+        description={settings?.heroDescription}
         backgroundImage={
           settings?.heroBackgroundImage
             ? urlFor(settings.heroBackgroundImage).width(1600).height(900).url()
             : undefined
         }
-        ctaText={settings?.primaryCtaText ?? "Tickets Sichern"}
-        ctaLink={settings?.primaryCtaLink ?? "/aktuell"}
-        secondaryCtaText={settings?.secondaryCtaText ?? "Mehr Erfahren"}
-        secondaryCtaLink={settings?.secondaryCtaLink ?? "/ueber-uns"}
+        ctaText={settings?.primaryCtaText}
+        ctaLink={settings?.primaryCtaLink}
+        secondaryCtaText={settings?.secondaryCtaText}
+        secondaryCtaLink={settings?.secondaryCtaLink}
       />
 
       {/* Current Play Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <SectionHeader
-            subtitle={
-              settings?.currentPlaySectionSubtitle ?? "Aktuell auf der Bühne"
-            }
-            title={settings?.currentPlaySectionTitle ?? "Unser neuestes Stück"}
-            description={
-              settings?.currentPlaySectionDescription ??
-              "Sichern Sie sich jetzt Ihre Tickets für dieses unvergessliche Theatererlebnis."
-            }
+            subtitle={settings?.currentPlaySectionSubtitle}
+            title={settings?.currentPlaySectionTitle || ""}
+            description={settings?.currentPlaySectionDescription}
           />
           <div className="max-w-5xl mx-auto">
             {mappedPlay ? (
               <PlayCard play={mappedPlay} variant="featured" />
             ) : (
               <div className="text-center text-muted-foreground">
-                Aktuell kein Stück ausgewählt.
+                Wir arbeiten bereits mit Hochdruck an einem neuen Stück, bleibt
+                gespannt!
               </div>
             )}
           </div>
@@ -168,8 +161,8 @@ export default async function HomePage() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-12">
             <SectionHeader
-              subtitle={settings?.newsSectionSubtitle ?? "Neuigkeiten"}
-              title={settings?.newsSectionTitle ?? "Aktuelles aus dem Theater"}
+              subtitle={settings?.newsSectionSubtitle}
+              title={settings?.newsSectionTitle || ""}
               align="left"
               className="mb-0"
             />
@@ -202,19 +195,15 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
-              {settings?.joinCtaTitle ??
-                "Werden Sie Teil unserer Theaterfamilie"}
+              {settings?.joinCtaTitle}
             </h2>
             <p className="text-muted-foreground text-lg">
-              {settings?.joinCtaDescription ??
-                "Sie haben Lust auf Theater? Ob auf der Bühne oder hinter den Kulissen – wir freuen uns immer über neue Gesichter und Talente."}
+              {settings?.joinCtaDescription}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Button asChild size="lg" className="font-semibold shadow-gold">
-                <Link
-                  href={settings?.joinCtaPrimaryLink ?? "/ueber-uns#kontakt"}
-                >
-                  {settings?.joinCtaPrimaryText ?? "Kontakt Aufnehmen"}
+                <Link href={settings?.joinCtaPrimaryLink || ""}>
+                  {settings?.joinCtaPrimaryText}
                 </Link>
               </Button>
               <Button
@@ -223,8 +212,8 @@ export default async function HomePage() {
                 size="lg"
                 className="border-primary/30 hover:bg-primary/10"
               >
-                <Link href={settings?.joinCtaSecondaryLink ?? "/archiv"}>
-                  {settings?.joinCtaSecondaryText ?? "Unsere Geschichte"}
+                <Link href={settings?.joinCtaSecondaryLink || ""}>
+                  {settings?.joinCtaSecondaryText}
                 </Link>
               </Button>
             </div>

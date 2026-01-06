@@ -160,5 +160,4 @@ export interface SiteSettings {
   footerInfoTitle?: string;
   footerInfoDescription?: string;
   footerDescription?: string;
-  copyrightText?: string;
 }
