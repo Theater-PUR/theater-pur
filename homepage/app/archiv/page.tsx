@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 // Mock data - used instead of CMS for now
 const mockArchivePlays: Play[] = [
   {
-    id: "der-zerbrochene-krug-2023",
+    slug: "der-zerbrochene-krug-2023",
     title: "Der zerbrochene Krug",
     subtitle: "von Heinrich von Kleist",
     description:
@@ -20,7 +20,7 @@ const mockArchivePlays: Play[] = [
     year: 2023,
   },
   {
-    id: "die-physiker-2023",
+    slug: "die-physiker-2023",
     title: "Die Physiker",
     subtitle: "von Friedrich Dürrenmatt",
     description:
@@ -30,7 +30,7 @@ const mockArchivePlays: Play[] = [
     year: 2023,
   },
   {
-    id: "woyzeck-2022",
+    slug: "woyzeck-2022",
     title: "Woyzeck",
     subtitle: "von Georg Büchner",
     description:
@@ -40,7 +40,7 @@ const mockArchivePlays: Play[] = [
     year: 2022,
   },
   {
-    id: "pension-schoeller-2022",
+    slug: "pension-schoeller-2022",
     title: "Pension Schöller",
     subtitle: "von Wilhelm Jacoby & Carl Laufs",
     description:
@@ -50,7 +50,7 @@ const mockArchivePlays: Play[] = [
     year: 2022,
   },
   {
-    id: "der-gott-des-gemetzels-2021",
+    slug: "der-gott-des-gemetzels-2021",
     title: "Der Gott des Gemetzels",
     subtitle: "von Yasmina Reza",
     description:
@@ -60,7 +60,7 @@ const mockArchivePlays: Play[] = [
     year: 2021,
   },
   {
-    id: "der-nackte-wahnsinn-2021",
+    slug: "der-nackte-wahnsinn-2021",
     title: "Der nackte Wahnsinn",
     subtitle: "von Michael Frayn",
     description:
@@ -70,7 +70,7 @@ const mockArchivePlays: Play[] = [
     year: 2021,
   },
   {
-    id: "art-2020",
+    slug: "art-2020",
     title: "Kunst",
     subtitle: "von Yasmina Reza",
     description:
@@ -80,7 +80,7 @@ const mockArchivePlays: Play[] = [
     year: 2020,
   },
   {
-    id: "die-feuerzangenbowle-2019",
+    slug: "die-feuerzangenbowle-2019",
     title: "Die Feuerzangenbowle",
     subtitle: "nach Heinrich Spoerl",
     description:
@@ -98,7 +98,9 @@ export default function ArchivePage() {
 
   const years = useMemo(
     () =>
-      [...new Set(archivePlays.map((play) => play.year))].sort((a, b) => b - a),
+      [...new Set(archivePlays.map((play) => play.year))].sort(
+        (a, b) => (b ?? 0) - (a ?? 0)
+      ),
     [archivePlays]
   );
 
@@ -137,7 +139,7 @@ export default function ArchivePage() {
                   key={year}
                   variant="outline"
                   size="sm"
-                  onClick={() => setSelectedYear(year)}
+                  onClick={() => setSelectedYear(year ?? null)}
                   className={cn(
                     "border-border/50",
                     selectedYear === year &&
@@ -158,7 +160,7 @@ export default function ArchivePage() {
           {filteredPlays.length > 0 ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredPlays.map((play) => (
-                <PlayCard key={play.id} play={play} variant="archive" />
+                <PlayCard key={play.slug} play={play} variant="archive" />
               ))}
             </div>
           ) : (

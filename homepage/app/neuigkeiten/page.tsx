@@ -5,7 +5,7 @@ import { NewsCard, type NewsPost } from "@/components/NewsCard";
 // Mock data - used instead of CMS for now
 const mockNewsPosts: NewsPost[] = [
   {
-    id: "proben-sommernachtstraum",
+    slug: "proben-sommernachtstraum",
     title: "Die Proben laufen auf Hochtouren",
     excerpt:
       'Unser Ensemble bereitet sich intensiv auf die Premiere von "Ein Sommernachtstraum" vor. Ein Blick hinter die Kulissen zeigt die Leidenschaft und Hingabe unserer Schauspieler. Wochenlange Arbeit an Choreografie, Text und Bühnenbild zahlen sich aus.',
@@ -15,7 +15,7 @@ const mockNewsPosts: NewsPost[] = [
     category: "Backstage",
   },
   {
-    id: "neue-mitglieder-2024",
+    slug: "neue-mitglieder-2024",
     title: "Neue Gesichter im Ensemble",
     excerpt:
       "Wir freuen uns, drei neue talentierte Schauspieler in unserer Theatergruppe begrüßen zu dürfen. Mit frischen Ideen und viel Enthusiasmus bereichern sie unser Team.",
@@ -25,7 +25,7 @@ const mockNewsPosts: NewsPost[] = [
     category: "Team",
   },
   {
-    id: "ruckblick-weihnachtsfeier",
+    slug: "ruckblick-weihnachtsfeier",
     title: "Rückblick: Unsere Weihnachtsfeier",
     excerpt:
       "Ein wundervoller Abend mit dem gesamten Team, Freunden und Unterstützern des Theaters. Wir blicken auf ein erfolgreiches Jahr zurück und freuen uns auf 2025.",
@@ -35,7 +35,7 @@ const mockNewsPosts: NewsPost[] = [
     category: "Events",
   },
   {
-    id: "stueck-ankuendigung-2025",
+    slug: "stueck-ankuendigung-2025",
     title: "Stückankündigung: Ein Sommernachtstraum",
     excerpt:
       'Es ist offiziell! Unser nächstes Stück wird Shakespeares zeitlose Komödie "Ein Sommernachtstraum". Die Premiere ist für Februar 2025 geplant.',
@@ -45,7 +45,7 @@ const mockNewsPosts: NewsPost[] = [
     category: "Ankündigung",
   },
   {
-    id: "workshop-jugendtheater",
+    slug: "workshop-jugendtheater",
     title: "Theaterworkshop für Jugendliche",
     excerpt:
       "Im Oktober veranstalteten wir einen Theaterworkshop für Jugendliche aus der Region. Die Begeisterung war groß und wir planen weitere Termine.",
@@ -55,7 +55,7 @@ const mockNewsPosts: NewsPost[] = [
     category: "Workshop",
   },
   {
-    id: "derniere-zerbrochener-krug",
+    slug: "derniere-zerbrochener-krug",
     title: "Dernière: Der zerbrochene Krug",
     excerpt:
       'Mit Standing Ovations endete unsere erfolgreiche Spielzeit von "Der zerbrochene Krug". Wir danken allen Besuchern für ihre Unterstützung.',
@@ -98,7 +98,7 @@ export default function NewsPage() {
               <div className="container mx-auto px-4">
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {otherPosts.map((post) => (
-                    <NewsCard key={post.id} post={post} />
+                    <NewsCard key={post.slug} post={post} />
                   ))}
                 </div>
               </div>

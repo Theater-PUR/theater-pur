@@ -1,4 +1,4 @@
-import { client } from "@/sanity/lib/client";
+import { sanityFetch } from "@/sanity/lib/live";
 import { homePageQuery, siteSettingsQuery } from "@/sanity/lib/queries";
 import type { NewsPost, Play, SiteSettings } from "@/types/sanity";
 
@@ -8,23 +8,28 @@ export interface HomePageData {
   latestNews: NewsPost[];
 }
 
-const DEFAULT_REVALIDATE = 300; // 5 minutes
-
 export async function getHomePageData(): Promise<HomePageData> {
-  const data = await client.fetch<HomePageData>(homePageQuery, {}, {
-    next: { revalidate: DEFAULT_REVALIDATE, tags: ["homepage"] },
+  const { data } = await sanityFetch({
+    query: homePageQuery,
+    tags: ["homepage"],
   });
+  const homeData = data as HomePageData | null;
 
   return {
-    settings: data?.settings ?? null,
-    currentPlay: data?.currentPlay ?? null,
-    latestNews: data?.latestNews ?? [],
+    settings: homeData?.settings ?? null,
+    currentPlay: homeData?.currentPlay ?? null,
+    latestNews: homeData?.latestNews ?? [],
   };
 }
 
-export async function getSiteSettings(): Promise<SiteSettings | null> {
-  const settings = await client.fetch<SiteSettings | null>(siteSettingsQuery, {}, {
-    next: { revalidate: DEFAULT_REVALIDATE, tags: ["siteSettings"] },
+export async function getSiteSettings(options?: {
+  stega?: boolean;
+}): Promise<SiteSettings | null> {
+  const { data } = await sanityFetch({
+    query: siteSettingsQuery,
+    stega: options?.stega,
+    tags: ["siteSettings"],
   });
-  return settings ?? null;
+
+  return (data as SiteSettings | null) ?? null;
 }

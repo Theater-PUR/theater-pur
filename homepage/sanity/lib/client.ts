@@ -8,4 +8,7 @@ export const client = createClient({
   apiVersion,
   // Use the API instead of CDN so ISR gets fresh content on revalidate
   useCdn: false,
+  stega: {
+    studioUrl: "/studio",
+  },
 });
