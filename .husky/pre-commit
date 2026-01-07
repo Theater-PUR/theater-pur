@@ -14,4 +14,11 @@ bun run lint-staged || {
   exit 1
 }
 
+# Run a production build
+echo "🏗️ Building production..."
+bun run build || {
+  echo "❌ Build failed. Please fix the build errors before committing."
+  exit 1
+}
+
 echo "✅ All pre-commit checks passed!"
