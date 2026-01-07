@@ -4,7 +4,6 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { AppShell } from "@/components/layout/AppShell";
 import { getSiteSettings } from "@/lib/sanity-data";
 import { SanityLive } from "@/sanity/lib/live";
 import { VisualEditing } from "next-sanity/visual-editing";
@@ -26,6 +25,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: settings?.title,
     description: settings?.description,
+    icons: {
+      icon: "/favicon-32x32.png",
+      apple: "/favicon-32x32.png",
+    },
   };
 }
 

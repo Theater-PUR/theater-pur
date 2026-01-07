@@ -113,25 +113,20 @@ async function HomePage() {
       />
 
       {/* Current Play Section */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4">
-          <SectionHeader
-            subtitle={settings?.currentPlaySectionSubtitle}
-            title={settings?.currentPlaySectionTitle || ""}
-            description={settings?.currentPlaySectionDescription}
-          />
-          <div className="max-w-5xl mx-auto">
-            {mappedPlay ? (
+      {mappedPlay && (
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-4">
+            <SectionHeader
+              subtitle={settings?.currentPlaySectionSubtitle}
+              title={settings?.currentPlaySectionTitle || ""}
+              description={settings?.currentPlaySectionDescription}
+            />
+            <div className="max-w-5xl mx-auto">
               <PlayCard play={mappedPlay} variant="featured" />
-            ) : (
-              <div className="text-center text-muted-foreground">
-                Wir arbeiten bereits mit Hochdruck an einem neuen Stück, bleibt
-                gespannt!
-              </div>
-            )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Stats Section */}
       {stats.length > 0 && (
@@ -227,7 +222,7 @@ async function HomePage() {
 
 export default async function Page() {
   return (
-    <PageLayout>
+    <PageLayout headerPosition="fixed">
       <HomePage />
     </PageLayout>
   );

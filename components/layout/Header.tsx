@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
@@ -18,18 +19,18 @@ const navLinks = [
 
 export interface HeaderProps {
   brandName?: string;
-  brandTagline?: string;
   primaryCtaText?: string;
   primaryCtaLink?: string;
   isDraftMode?: boolean;
+  headerPosition?: "sticky" | "fixed";
 }
 
 export function Header({
   brandName,
-  brandTagline,
   primaryCtaText,
   primaryCtaLink,
   isDraftMode,
+  headerPosition = "sticky",
 }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
@@ -37,7 +38,8 @@ export function Header({
   return (
     <header
       className={cn(
-        "sticky top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50"
+        headerPosition,
+        "top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md"
       )}
     >
       {isDraftMode && <DraftModeIndicator />}
@@ -45,18 +47,14 @@ export function Header({
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-              <span className="text-primary font-display font-bold text-xl">
-                TP
-              </span>
-            </div>
-            <div className="hidden sm:block">
-              <div className="font-display text-xl font-bold text-foreground">
-                {brandName}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {brandTagline}
-              </div>
+            <div className="relative w-24 h-24">
+              <Image
+                src="/logo.png"
+                alt={brandName + " Logo"}
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
           </Link>
 
