@@ -51,7 +51,7 @@ const mapStats = (stats?: StatItem[]) =>
   }) ?? [];
 
 const mapHomeData = (data?: HomePageData | null) => {
-  const play = data.currentPlay;
+  const play = data?.currentPlay;
   const firstPerformance = play?.performances?.[0];
   const mappedPlay = play
     ? {
@@ -69,7 +69,7 @@ const mapHomeData = (data?: HomePageData | null) => {
     : null;
 
   const mappedNews =
-    data.latestNews?.map((post) => ({
+    data?.latestNews?.map((post) => ({
       slug: post.slug?.current ?? post._id,
       title: post.title,
       excerpt: post.excerpt,
@@ -84,7 +84,7 @@ const mapHomeData = (data?: HomePageData | null) => {
       category: post.category,
     })) ?? [];
 
-  const stats = mapStats(data.settings?.stats);
+  const stats = mapStats(data?.settings?.stats);
 
   return { mappedPlay, mappedNews, stats };
 };

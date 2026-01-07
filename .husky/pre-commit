@@ -1,0 +1,17 @@
+echo "🔍 Running pre-commit checks..."
+
+# Run type checking
+echo "📝 Type checking..."
+bun run type-check || {
+  echo "❌ Type checking failed. Please fix the type errors before committing."
+  exit 1
+}
+
+# Run lint-staged (linting + formatting)
+echo "🎨 Linting and formatting staged files..."
+bun run lint-staged || {
+  echo "❌ Linting failed. Please fix the linting errors before committing."
+  exit 1
+}
+
+echo "✅ All pre-commit checks passed!"
