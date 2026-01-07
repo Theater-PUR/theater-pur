@@ -60,9 +60,16 @@ export function NewsCard({ post, variant = "default" }: NewsCardProps) {
           isFeatured && "md:p-8 md:flex md:flex-col md:justify-center"
         )}
       >
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-          <Calendar className="w-4 h-4" />
-          <time>{post.publishedAt}</time>
+        <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4" />
+            <time>{post.publishedAt}</time>
+          </div>
+          {post.category && (
+            <span className="px-3 py-1 text-xs font-semibold bg-primary text-primary-foreground rounded-full">
+              {post.category}
+            </span>
+          )}
         </div>
         <h3
           className={cn(

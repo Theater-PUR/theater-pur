@@ -55,16 +55,32 @@ export default {
       validation: (Rule: any) => Rule.required().min(1900).max(2100),
     },
     {
+      name: 'duration',
+      title: 'Dauer',
+      type: 'string',
+      description: 'z.B. "ca. 2 Stunden (inkl. Pause)"',
+    },
+    {
+      name: 'isActive',
+      title: 'Aktuell spielend',
+      type: 'boolean',
+      description: 'Ist dieses Stück aktuell auf der Bühne? (zusätzlich zur Referenz in Site Settings)',
+      initialValue: false,
+    },
+    {
       name: 'description',
       title: 'Kurzbeschreibung',
       type: 'array',
       of: [{type: 'block'}],
+      description: 'Kurze Zusammenfassung (~100-200 Wörter). Wird auf der Homepage, im Archiv und in Vorschaukarten angezeigt.',
+      validation: (Rule: any) => Rule.required(),
     },
     {
       name: 'synopsis',
-      title: 'Ausführliche Beschreibung',
+      title: 'Ausführliche Beschreibung (Optional)',
       type: 'array',
       of: [{type: 'block'}],
+      description: 'Detaillierte Beschreibung des Stücks (~300-500 Wörter). Wird nur auf der Detailseite des Stücks angezeigt. Falls nicht ausgefüllt, wird die Kurzbeschreibung verwendet.',
     },
     {
       name: 'cast',
@@ -103,122 +119,43 @@ export default {
       ],
     },
     {
-      name: 'performances',
-      title: 'Aufführungstermine',
+      name: 'pricing',
+      title: 'Eintrittspreise',
       type: 'array',
+      description: 'Globale Preise für dieses Stück (gelten für alle Aufführungen)',
       of: [
         {
           type: 'object',
-          name: 'performance',
-          title: 'Aufführung',
+          name: 'ticketPrice',
+          title: 'Preiskategorie',
           fields: [
             {
-              name: 'date',
-              title: 'Datum',
-              type: 'date',
-            },
-            {
-              name: 'time',
-              title: 'Uhrzeit',
+              name: 'category',
+              title: 'Kategorie',
               type: 'string',
-              description: 'z.B. "19:30 Uhr"',
+              description: 'z.B. "Normal", "Ermäßigt", "Kinder"',
             },
             {
-              name: 'location',
-              title: 'Veranstaltungsort',
-              type: 'object',
-              fields: [
-                {
-                  name: 'name',
-                  title: 'Name',
-                  type: 'string',
-                  description: 'z.B. "Theater PUR" oder "Gemeindezentrum St. Matthias"',
-                },
-                {
-                  name: 'street',
-                  title: 'Straße und Hausnummer',
-                  type: 'string',
-                  description: 'z.B. "Musterstraße 123"',
-                },
-                {
-                  name: 'postalCode',
-                  title: 'Postleitzahl',
-                  type: 'string',
-                },
-                {
-                  name: 'city',
-                  title: 'Stadt',
-                  type: 'string',
-                },
-                {
-                  name: 'remarks',
-                  title: 'Zusätzliche Hinweise',
-                  type: 'text',
-                  description: 'z.B. "Eingang über den Hinterhof" oder "Parkplätze vorhanden"',
-                },
-              ],
-            },
-            {
-              name: 'ticketsAvailable',
-              title: 'Verfügbare Plätze',
+              name: 'price',
+              title: 'Preis (€)',
               type: 'number',
             },
             {
-              name: 'ticketPrices',
-              title: 'Eintrittspreise',
-              type: 'array',
-              of: [
-                {
-                  type: 'object',
-                  name: 'ticketPrice',
-                  title: 'Preiskategorie',
-                  fields: [
-                    {
-                      name: 'category',
-                      title: 'Kategorie',
-                      type: 'string',
-                      description: 'z.B. "Normal", "Ermäßigt", "Kinder"',
-                    },
-                    {
-                      name: 'price',
-                      title: 'Preis (€)',
-                      type: 'number',
-                    },
-                    {
-                      name: 'description',
-                      title: 'Beschreibung',
-                      type: 'string',
-                      description: 'z.B. "Schüler, Studenten, Schwerbehinderte"',
-                    },
-                  ],
-                  preview: {
-                    select: {
-                      title: 'category',
-                      price: 'price',
-                    },
-                    prepare({title, price}: any) {
-                      return {
-                        title: title,
-                        subtitle: `${price} €`,
-                      }
-                    },
-                  },
-                },
-              ],
+              name: 'description',
+              title: 'Beschreibung',
+              type: 'string',
+              description: 'z.B. "Schüler, Studenten, Schwerbehinderte"',
             },
           ],
           preview: {
             select: {
-              date: 'date',
-              time: 'time',
-              locationName: 'location.name',
-              locationCity: 'location.city',
+              title: 'category',
+              price: 'price',
             },
-            prepare({date, time, locationName, locationCity}: any) {
-              const location = locationName || locationCity || 'Kein Ort angegeben'
+            prepare({title, price}: any) {
               return {
-                title: `${date} - ${time}`,
-                subtitle: location,
+                title: title,
+                subtitle: `${price} €`,
               }
             },
           },

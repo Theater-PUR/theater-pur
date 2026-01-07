@@ -41,6 +41,9 @@ export default async function RootLayout({
 
   return (
     <html lang="de" className="dark">
+      <head>
+        <script src="https://fienta.com/embed.js" async defer />
+      </head>
       <body
         className={`${inter.variable} ${playfair.variable} antialiased bg-background`}
       >

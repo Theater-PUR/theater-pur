@@ -58,8 +58,9 @@ export interface Performance {
   date: string;
   time: string;
   location?: Location;
-  ticketsAvailable?: number;
-  ticketPrices?: TicketPrice[];
+  availableSeats?: number;
+  totalSeats?: number;
+  bookingUrl?: string;
 }
 
 export interface Play {
@@ -73,8 +74,11 @@ export interface Play {
   author?: string;
   director?: string;
   year: number;
+  duration?: string;
+  isActive?: boolean;
   cast?: CastMember[];
   performances?: Performance[];
+  pricing?: TicketPrice[];
   gallery?: SanityImage[];
 }
 
@@ -106,6 +110,12 @@ export interface StatItem {
   label: string;
 }
 
+export interface Highlight {
+  icon?: string; // Lucide icon name
+  title: string;
+  description: string;
+}
+
 export interface SiteSettings {
   _id: string;
   _type: "siteSettings";
@@ -118,6 +128,8 @@ export interface SiteSettings {
     _ref: string;
     _type: "reference";
   };
+  // Integrations
+  fientaOrganizerId?: string;
   // Hero
   heroSubtitle?: string;
   heroTitle?: string;
@@ -151,9 +163,20 @@ export interface SiteSettings {
     youtube?: string;
   };
   // About
-  aboutDescription?: string;
+  aboutHeroTitle?: string;
+  aboutHeroSubtitle?: string;
+  aboutHeroDescription?: string;
+  aboutStoryTitle?: string;
   aboutStory?: SanityBlock[];
+  aboutImages?: SanityImage[];
+  aboutTeamTitle?: string;
+  aboutTeamSubtitle?: string;
+  aboutTeamDescription?: string;
+  aboutContactTitle?: string;
+  aboutContactSubtitle?: string;
+  aboutContactDescription?: string;
   stats?: StatItem[];
+  aboutHighlights?: Highlight[];
   // Footer
   footerCtaTitle?: string;
   footerCtaDescription?: string;

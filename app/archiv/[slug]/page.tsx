@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Clock, Euro, Users, ArrowRight } from "lucide-react";
-import { getCurrentPlay } from "@/lib/sanity-data";
+import { Calendar, MapPin, Clock, Euro, Users, ArrowRight, ArrowLeft } from "lucide-react";
+import { getPlayBySlug } from "@/lib/sanity-data";
 import { urlFor } from "@/sanity/lib/image";
+import { notFound } from "next/navigation";
+import Link from "next/link";
 import type { SanityBlock } from "@/types/sanity";
 import { ImageGallery } from "@/components/ImageGallery";
 
@@ -11,23 +13,18 @@ const portableTextToPlain = (blocks?: SanityBlock[]) =>
     ?.map((block) => block.children?.map((child) => child.text).join(""))
     .join("\n\n") ?? "";
 
-export default async function CurrentPlayPage() {
-  const play = await getCurrentPlay();
+interface ArchivePlayPageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
+export default async function ArchivePlayPage({ params }: ArchivePlayPageProps) {
+  const { slug } = await params;
+  const play = await getPlayBySlug(slug);
 
   if (!play) {
-    return (
-      <section className="pt-32 pb-20 bg-background">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="font-display text-4xl font-bold text-foreground mb-4">
-            Aktuell kein Stück
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Wir arbeiten bereits mit Hochdruck an einem neuen Stück, bleibt
-            gespannt!
-          </p>
-        </div>
-      </section>
-    );
+    notFound();
   }
 
   // Use synopsis for detail page if available, otherwise fall back to description
@@ -51,9 +48,19 @@ export default async function CurrentPlayPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
           </div>
         )}
-        <div className="relative z-10 container mx-auto px-4 pb-12">
-          <Badge className="mb-4 bg-primary text-primary-foreground">
-            Jetzt Spielend
+        <div className="relative z-10 container mx-auto px-4 pb-12 pt-32">
+          <Button
+            asChild
+            variant="ghost"
+            className="mb-4 -ml-4 text-muted-foreground hover:text-foreground"
+          >
+            <Link href="/archiv">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Zurück zum Archiv
+            </Link>
+          </Button>
+          <Badge className="mb-4 bg-muted text-muted-foreground">
+            Archiv {play.year}
           </Badge>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-3">
             {play.title}
@@ -152,11 +159,11 @@ export default async function CurrentPlayPage() {
                 </section>
               )}
 
-              {/* Performances */}
+              {/* Performances - only show if there are any */}
               {play.performances && play.performances.length > 0 && (
                 <section>
                   <h2 className="font-display text-2xl font-bold text-foreground mb-6">
-                    Aufführungstermine
+                    Vergangene Aufführungen
                   </h2>
                   <div className="space-y-4">
                     {play.performances.map((performance) => {
@@ -211,42 +218,6 @@ export default async function CurrentPlayPage() {
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-4">
-                            {(performance.availableSeats ?? 0) > 0 ? (
-                              <>
-                                <span className="text-sm text-muted-foreground">
-                                  {performance.availableSeats} Plätze frei
-                                </span>
-                                {performance.bookingUrl ? (
-                                  <Button
-                                    asChild
-                                    className="font-semibold"
-                                  >
-                                    <a
-                                      href={performance.bookingUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      Tickets buchen
-                                      <ArrowRight className="w-4 h-4 ml-2" />
-                                    </a>
-                                  </Button>
-                                ) : (
-                                  <Button className="font-semibold" disabled>
-                                    Tickets
-                                    <ArrowRight className="w-4 h-4 ml-2" />
-                                  </Button>
-                                )}
-                              </>
-                            ) : (
-                              <Badge
-                                variant="secondary"
-                                className="bg-destructive/20 text-destructive"
-                              >
-                                Ausverkauft
-                              </Badge>
-                            )}
-                          </div>
                         </div>
                       );
                     })}
@@ -258,7 +229,46 @@ export default async function CurrentPlayPage() {
             {/* Sidebar */}
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-6">
-                {/* Pricing Card */}
+                {/* Info Card */}
+                <div className="p-6 rounded-lg bg-card border border-border/50">
+                  <h3 className="font-display text-xl font-bold text-foreground mb-4">
+                    Produktion {play.year}
+                  </h3>
+                  <div className="space-y-3 text-sm">
+                    {play.author && (
+                      <div>
+                        <p className="text-muted-foreground mb-1">Autor</p>
+                        <p className="font-medium text-foreground">{play.author}</p>
+                      </div>
+                    )}
+                    {play.director && (
+                      <div>
+                        <p className="text-muted-foreground mb-1">Regie</p>
+                        <p className="font-medium text-foreground">
+                          {play.director}
+                        </p>
+                      </div>
+                    )}
+                    {play.duration && (
+                      <div>
+                        <p className="text-muted-foreground mb-1">Dauer</p>
+                        <p className="font-medium text-foreground">
+                          {play.duration}
+                        </p>
+                      </div>
+                    )}
+                    {play.cast && play.cast.length > 0 && (
+                      <div>
+                        <p className="text-muted-foreground mb-1">Ensemble</p>
+                        <p className="font-medium text-foreground">
+                          {play.cast.length} Darsteller
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Pricing Card - if available */}
                 {play.pricing && play.pricing.length > 0 && (
                   <div className="p-6 rounded-lg bg-card border border-border/50">
                     <h3 className="font-display text-xl font-bold text-foreground mb-4 flex items-center gap-2">
@@ -289,22 +299,6 @@ export default async function CurrentPlayPage() {
                     </div>
                   </div>
                 )}
-
-                {/* Quick Book CTA */}
-                <div className="p-6 rounded-lg bg-primary/10 border border-primary/30">
-                  <h3 className="font-display text-lg font-bold text-foreground mb-2">
-                    Tickets sichern
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Wählen Sie oben einen Termin aus und klicken Sie auf
-                    &quot;Tickets buchen&quot; um Ihre Karten online zu
-                    reservieren.
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-3">
-                    Buchung über Fienta.com - Bezahlung per Überweisung,
-                    Giropay oder Kreditkarte
-                  </p>
-                </div>
               </div>
             </div>
           </div>

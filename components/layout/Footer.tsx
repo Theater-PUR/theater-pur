@@ -147,6 +147,12 @@ export function Footer({
               >
                 Datenschutz
               </Link>
+              <Link
+                href="/studio"
+                className="hover:text-primary transition-colors"
+              >
+                Administration
+              </Link>
             </div>
           </div>
         </div>

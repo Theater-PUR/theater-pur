@@ -1,7 +1,7 @@
 // Schema: Site Settings (Seiteneinstellungen)
 // Copy this to your Sanity Studio schemas folder
 
-export default {
+const siteSettingsSchema = {
   name: "siteSettings",
   title: "Seiteneinstellungen",
   type: "document",
@@ -29,6 +29,10 @@ export default {
     {
       name: "footer",
       title: "Footer",
+    },
+    {
+      name: "integrations",
+      title: "Integrationen",
     },
   ],
   fields: [
@@ -74,6 +78,15 @@ export default {
       to: [{ type: "play" }],
       group: "general",
       description: "Wählen Sie das aktuell laufende Theaterstück aus",
+    },
+
+    // Integrations
+    {
+      name: "fientaOrganizerId",
+      title: "Fienta Organizer ID",
+      type: "string",
+      group: "integrations",
+      description: "Die Organizer ID von Fienta.com für das Abrufen von Events/Terminen. Zu finden in der URL der Fienta Settings-Seite.",
     },
 
     // Hero Section
@@ -246,7 +259,7 @@ export default {
       title: "Telefonnummer",
       type: "string",
       group: "contact",
-      initialValue: "+49 421 17890",
+      initialValue: "04294 / 79 67 550",
     },
     {
       name: "addressStreet",
@@ -295,36 +308,210 @@ export default {
 
     // About Section
     {
-      name: "aboutTheaterName",
-      title: "Theater Name",
+      name: "aboutHeroTitle",
+      title: "Über Uns - Haupttitel",
       type: "string",
       group: "about",
-      description: "Deprecated: ersetzt durch brandName/brandTagline",
-      hidden: true,
-      readOnly: true,
+      initialValue: "Theaterpur Weyhe",
     },
     {
-      name: "aboutTagline",
-      title: "Tagline",
+      name: "aboutHeroSubtitle",
+      title: "Über Uns - Untertitel",
       type: "string",
       group: "about",
-      description: "Deprecated: ersetzt durch brandName/brandTagline",
-      hidden: true,
-      readOnly: true,
+      initialValue: "Über Uns",
     },
     {
-      name: "aboutDescription",
-      title: "Kurzbeschreibung",
+      name: "aboutHeroDescription",
+      title: "Über Uns - Beschreibung",
       type: "text",
       rows: 3,
       group: "about",
+      initialValue:
+        "Seit 2002 bringen wir Leidenschaft, Kunst und Gemeinschaft auf die Bühne. Unser Amateurtheater vereint Menschen, die eine gemeinsame Liebe zum Theater teilen.",
+    },
+    {
+      name: "aboutStoryTitle",
+      title: "Unsere Geschichte - Titel",
+      type: "string",
+      group: "about",
+      initialValue: "Unsere Geschichte",
     },
     {
       name: "aboutStory",
-      title: "Unsere Geschichte",
+      title: "Unsere Geschichte - Inhalt",
       type: "array",
       of: [{ type: "block" }],
       group: "about",
+      initialValue: [
+        {
+          _type: "block",
+          children: [
+            {
+              _type: "span",
+              text: "Theater Pur wurde 2002 in Weyhe gegründet und ist seitdem ein fester Bestandteil der regionalen Kulturszene. Was uns auszeichnet, ist unsere Vielseitigkeit: Wir bringen Theater an ungewöhnliche Orte und begeistern unser Publikum mit einem breiten Repertoire.",
+            },
+          ],
+          style: "normal",
+        },
+        {
+          _type: "block",
+          children: [
+            {
+              _type: "span",
+              text: "Unser Ensemble besteht aus rund 15 engagierten Schauspielerinnen und Schauspielern, die mit Herzblut dabei sind. Von kurzen Sketchen über szenische Darbietungen bis hin zu abendfüllenden Comedy-Veranstaltungen – wir lieben die Vielfalt des Theaters. Dabei haben wir auch eigene Stücke erfolgreich auf die Bühne gebracht.",
+            },
+          ],
+          style: "normal",
+        },
+        {
+          _type: "block",
+          children: [
+            {
+              _type: "span",
+              text: "Unsere Hauptspielzeit liegt im Winter, wenn wir in verschiedenen Spielstätten auftreten, darunter das Forum der Kooperativen Gesamtschule Leeste und das Kulturforum der KGS Kirchweyhe. Ob Sie selbst mitspielen oder uns als Zuschauer erleben möchten – wir freuen uns immer über neue Gesichter!",
+            },
+          ],
+          style: "normal",
+        },
+      ],
+    },
+    {
+      name: "aboutImages",
+      title: "Über Uns - Bilder",
+      type: "array",
+      of: [
+        {
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            {
+              name: "alt",
+              title: "Alternativtext",
+              type: "string",
+            },
+          ],
+        },
+      ],
+      group: "about",
+      description: "Bilder für die Über-Uns-Seite",
+    },
+    {
+      name: "aboutTeamTitle",
+      title: "Team - Titel",
+      type: "string",
+      group: "about",
+      initialValue: "Das Ensemble",
+    },
+    {
+      name: "aboutTeamSubtitle",
+      title: "Team - Untertitel",
+      type: "string",
+      group: "about",
+      initialValue: "Unser Team",
+    },
+    {
+      name: "aboutTeamDescription",
+      title: "Team - Beschreibung",
+      type: "text",
+      rows: 2,
+      group: "about",
+      initialValue: "Die Menschen hinter den Kulissen und auf der Bühne.",
+    },
+    {
+      name: "aboutContactTitle",
+      title: "Kontakt - Titel",
+      type: "string",
+      group: "about",
+      initialValue: "Schreiben Sie uns",
+    },
+    {
+      name: "aboutContactSubtitle",
+      title: "Kontakt - Untertitel",
+      type: "string",
+      group: "about",
+      initialValue: "Kontakt",
+    },
+    {
+      name: "aboutContactDescription",
+      title: "Kontakt - Beschreibung",
+      type: "text",
+      rows: 3,
+      group: "about",
+      initialValue:
+        "Haben Sie Fragen, möchten mitmachen oder einfach Hallo sagen? Wir freuen uns auf Ihre Nachricht!",
+    },
+    {
+      name: "aboutHighlights",
+      title: "Highlights & Besonderheiten",
+      type: "array",
+      group: "about",
+      of: [
+        {
+          type: "object",
+          name: "highlight",
+          title: "Highlight",
+          fields: [
+            {
+              name: "icon",
+              title: "Icon (Lucide Name)",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Theater", value: "theater" },
+                  { title: "Users", value: "users" },
+                  { title: "Lightbulb", value: "lightbulb" },
+                  { title: "MapPin", value: "map-pin" },
+                  { title: "Calendar", value: "calendar" },
+                  { title: "Laugh", value: "laugh" },
+                ],
+              },
+              description: "Icon für das Highlight",
+            },
+            {
+              name: "title",
+              title: "Titel",
+              type: "string",
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              validation: (Rule: any) => Rule.required(),
+            },
+            {
+              name: "description",
+              title: "Beschreibung",
+              type: "text",
+              rows: 3,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              validation: (Rule: any) => Rule.required(),
+            },
+          ],
+        },
+      ],
+      initialValue: [
+        {
+          icon: "map-pin",
+          title: "Theater an ungewöhnlichen Orten",
+          description:
+            "Wir bringen Theater dorthin, wo man es nicht erwartet. Von Schulen über Kulturzentren bis zu ganz besonderen Locations – jeder Auftritt ist einzigartig.",
+        },
+        {
+          icon: "laugh",
+          title: "Vielseitiges Repertoire",
+          description:
+            "Von kurzen Sketchen über szenische Darbietungen bis hin zu abendfüllenden Comedy-Veranstaltungen – bei uns ist für jeden etwas dabei.",
+        },
+        {
+          icon: "lightbulb",
+          title: "Eigene Produktionen",
+          description:
+            "Wir entwickeln und inszenieren auch eigene Stücke. Kreativität und Innovation stehen bei uns an erster Stelle.",
+        },
+        {
+          icon: "users",
+          title: "Gemeinschaft erleben",
+          description:
+            "Bei uns sind alle willkommen – ob auf der Bühne oder hinter den Kulissen. Theater ist Teamwork und macht gemeinsam am meisten Spaß!",
+        },
+      ],
     },
     {
       name: "stats",
@@ -354,15 +541,29 @@ export default {
               name: "value",
               title: "Wert",
               type: "string",
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               validation: (Rule: any) => Rule.required(),
             },
             {
               name: "label",
               title: "Label",
               type: "string",
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               validation: (Rule: any) => Rule.required(),
             },
           ],
+        },
+      ],
+      initialValue: [
+        {
+          icon: "calendar",
+          value: "seit 2002",
+          label: "Aktiv",
+        },
+        {
+          icon: "users",
+          value: "~15",
+          label: "Ensemble-Mitglieder",
         },
       ],
     },
@@ -399,7 +600,7 @@ export default {
       rows: 3,
       group: "footer",
       initialValue:
-        "Ein Amateurtheater mit Leidenschaft seit über 15 Jahren. Wir lieben, was wir tun - und teilen diese Liebe mit unserem Publikum.",
+        "Ein Amateurtheater mit Leidenschaft seit 2002. Wir lieben, was wir tun - und teilen diese Liebe mit unserem Publikum an ungewöhnlichen Orten.",
     },
     {
       name: "footerDescription",
@@ -409,7 +610,7 @@ export default {
       group: "footer",
       description: "Brand-Intro im Footer",
       initialValue:
-        "Seit Jahren begeistern wir unser Publikum mit leidenschaftlichen Aufführungen und unvergesslichen Theatererlebnissen.",
+        "Seit 2002 begeistern wir unser Publikum mit leidenschaftlichen Aufführungen an ungewöhnlichen Orten. Von Sketchen über Comedy bis zu eigenen Stücken – Theater in seiner vielfältigsten Form.",
     },
   ],
   preview: {
@@ -420,3 +621,5 @@ export default {
     },
   },
 };
+
+export default siteSettingsSchema;
