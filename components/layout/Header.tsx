@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { DraftModeIndicator } from "./DraftModeIndicator";
 
 const navLinks = [
   { href: "/", label: "Startseite" },
@@ -24,11 +25,11 @@ export interface HeaderProps {
 }
 
 export function Header({
-  brandName = "Theater Pur",
-  brandTagline = "Regensburger Laienspielgruppe",
-  primaryCtaText = "Tickets",
-  primaryCtaLink = "/aktuell",
-  isDraftMode = false,
+  brandName,
+  brandTagline,
+  primaryCtaText,
+  primaryCtaLink,
+  isDraftMode,
 }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
@@ -36,10 +37,10 @@ export function Header({
   return (
     <header
       className={cn(
-        "fixed left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50",
-        isDraftMode ? "top-12" : "top-0"
+        "sticky top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50"
       )}
     >
+      {isDraftMode && <DraftModeIndicator />}
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -115,7 +116,10 @@ export function Header({
               ))}
               <div className="pt-4 px-4">
                 <Button asChild className="w-full font-semibold">
-                  <Link href={primaryCtaLink} onClick={() => setIsOpen(false)}>
+                  <Link
+                    href={primaryCtaLink ?? ""}
+                    onClick={() => setIsOpen(false)}
+                  >
                     {primaryCtaText}
                   </Link>
                 </Button>

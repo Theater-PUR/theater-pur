@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import type { SiteSettings } from "@/types/sanity";
@@ -12,13 +11,6 @@ interface AppShellProps {
 }
 
 export function AppShell({ children, settings, isDraftMode }: AppShellProps) {
-  const pathname = usePathname();
-  const isStudio = pathname?.startsWith("/studio");
-
-  if (isStudio) {
-    return <>{children}</>;
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header
@@ -28,9 +20,7 @@ export function AppShell({ children, settings, isDraftMode }: AppShellProps) {
         primaryCtaLink={settings?.primaryCtaLink || ""}
         isDraftMode={isDraftMode}
       />
-      <main className={`flex-1 ${isDraftMode ? "pt-[7.5rem]" : "pt-20"}`}>
-        {children}
-      </main>
+      <main className="flex-1">{children}</main>
       <Footer
         brandName={settings?.brandName || ""}
         brandTagline={settings?.brandTagline || ""}

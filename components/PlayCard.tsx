@@ -64,7 +64,7 @@ export function PlayCard({ play, variant = "default" }: PlayCardProps) {
                   : "bg-velvet text-foreground"
               )}
             >
-            {play.isActive ? "Jetzt Spielend" : "Demnächst"}
+              {play.isActive ? "Jetzt Spielend" : "Demnächst"}
             </span>
           </div>
         )}

@@ -33,7 +33,9 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   return (
     <>
       {/* Hero */}
-      <section className={`relative flex items-end overflow-hidden ${coverImageUrl ? 'min-h-[50vh]' : 'pt-32'}`}>
+      <section
+        className={`relative flex items-end overflow-hidden ${coverImageUrl ? "min-h-[50vh]" : "pt-32"}`}
+      >
         {coverImageUrl && (
           <>
             <div className="absolute inset-0">
@@ -46,7 +48,9 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             </div>
           </>
         )}
-        <div className={`relative z-10 container mx-auto px-4 ${coverImageUrl ? 'pb-12 pt-32' : 'pb-8'}`}>
+        <div
+          className={`relative z-10 container mx-auto px-4 ${coverImageUrl ? "pb-12 pt-32" : "pb-8"}`}
+        >
           <Button
             asChild
             variant="ghost"

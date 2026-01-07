@@ -10,6 +10,7 @@ import { getHomePageData } from "@/lib/sanity-data";
 import { urlFor } from "@/sanity/lib/image";
 import type { HomePageData } from "@/lib/sanity-data";
 import type { StatItem, SanityBlock, Performance } from "@/types/sanity";
+import PageLayout from "./pages/layout";
 
 const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   calendar: Calendar,
@@ -49,7 +50,7 @@ const mapStats = (stats?: StatItem[]) =>
     return { ...stat, Icon, key: `${stat.icon}-${index}` };
   }) ?? [];
 
-const mapHomeData = (data: HomePageData) => {
+const mapHomeData = (data?: HomePageData | null) => {
   const play = data.currentPlay;
   const firstPerformance = play?.performances?.[0];
   const mappedPlay = play
@@ -88,9 +89,9 @@ const mapHomeData = (data: HomePageData) => {
   return { mappedPlay, mappedNews, stats };
 };
 
-export default async function HomePage() {
+async function HomePage() {
   const data = await getHomePageData();
-  const { settings } = data;
+  const { settings } = data ?? {};
   const { mappedPlay, mappedNews, stats } = mapHomeData(data);
 
   return (
@@ -221,5 +222,13 @@ export default async function HomePage() {
         </div>
       </section>
     </>
+  );
+}
+
+export default async function Page() {
+  return (
+    <PageLayout>
+      <HomePage />
+    </PageLayout>
   );
 }

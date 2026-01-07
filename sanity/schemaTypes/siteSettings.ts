@@ -86,7 +86,8 @@ const siteSettingsSchema = {
       title: "Fienta Organizer ID",
       type: "string",
       group: "integrations",
-      description: "Die Organizer ID von Fienta.com für das Abrufen von Events/Terminen. Zu finden in der URL der Fienta Settings-Seite.",
+      description:
+        "Die Organizer ID von Fienta.com für das Abrufen von Events/Terminen. Zu finden in der URL der Fienta Settings-Seite.",
     },
 
     // Hero Section

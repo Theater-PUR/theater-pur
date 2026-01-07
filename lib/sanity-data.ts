@@ -9,7 +9,16 @@ import {
   newsPostBySlugQuery,
   aboutPageQuery,
 } from "@/sanity/lib/queries";
-import type { NewsPost, Play, SiteSettings, TeamMember } from "@/types/sanity";
+import type {
+  Highlight,
+  NewsPost,
+  Play,
+  SanityBlock,
+  SanityImage,
+  SiteSettings,
+  StatItem,
+  TeamMember,
+} from "@/types/sanity";
 import { getFientaPerformancesForPlay } from "./fienta";
 
 export interface HomePageData {
@@ -24,16 +33,16 @@ export interface AboutPageData {
     aboutHeroSubtitle?: string;
     aboutHeroDescription?: string;
     aboutStoryTitle?: string;
-    aboutStory?: any[];
-    aboutImages?: any[];
+    aboutStory?: SanityBlock[];
+    aboutImages?: SanityImage[];
     aboutTeamTitle?: string;
     aboutTeamSubtitle?: string;
     aboutTeamDescription?: string;
     aboutContactTitle?: string;
     aboutContactSubtitle?: string;
     aboutContactDescription?: string;
-    stats?: any[];
-    aboutHighlights?: any[];
+    stats?: StatItem[];
+    aboutHighlights?: Highlight[];
     contactEmail?: string;
     contactPhone?: string;
     addressStreet?: string;
@@ -48,63 +57,59 @@ export interface AboutPageData {
   teamMembers: TeamMember[];
 }
 
-export async function getHomePageData(): Promise<HomePageData> {
+export async function getHomePageData(): Promise<HomePageData | null> {
   const { data } = await sanityFetch({
     query: homePageQuery,
     tags: ["homepage"],
   });
   const homeData = data as HomePageData | null;
 
-  let currentPlay = homeData?.currentPlay ?? null;
+  if (!homeData) {
+    return null;
+  }
+
+  const currentPlay = homeData.currentPlay;
 
   // Fetch Fienta events for current play if available
-  if (currentPlay && homeData?.settings?.fientaOrganizerId) {
+  if (currentPlay && homeData.settings?.fientaOrganizerId) {
     const fientaPerformances = await getFientaPerformancesForPlay(
       homeData.settings.fientaOrganizerId,
       currentPlay.title
     );
-    
+
     // Replace with Fienta performances only (no fallback to CMS)
-    currentPlay = {
-      ...currentPlay,
-      performances: fientaPerformances,
-    };
+    currentPlay.performances = fientaPerformances;
   } else if (currentPlay) {
     // If no Fienta integration, clear performances
-    currentPlay = {
-      ...currentPlay,
-      performances: [],
-    };
+    currentPlay.performances = [];
   }
 
   return {
-    settings: homeData?.settings ?? null,
+    settings: homeData.settings,
     currentPlay,
-    latestNews: homeData?.latestNews ?? [],
+    latestNews: homeData.latestNews,
   };
 }
 
-export async function getSiteSettings(options?: {
-  stega?: boolean;
-}): Promise<SiteSettings | null> {
+export async function getSiteSettings(): Promise<SiteSettings | null> {
   const { data } = await sanityFetch({
     query: siteSettingsQuery,
-    stega: options?.stega,
     tags: ["siteSettings"],
   });
 
-  return (data as SiteSettings | null) ?? null;
+  if (!data) {
+    return null;
+  }
+
+  return data;
 }
 
-export async function getCurrentPlay(): Promise<Play | null> {
-  const { data } = await sanityFetch({
-    query: currentPlayQuery,
-    tags: ["play", "currentPlay"],
-  });
-
-  const play = (data as Play | null) ?? null;
-  
-  if (!play) return null;
+async function enrichPlayWithFientaPerformances(
+  play: Play | null
+): Promise<void> {
+  if (!play) {
+    return;
+  }
 
   // Fetch Fienta events if organizer ID is available
   const settings = await getSiteSettings();
@@ -113,13 +118,28 @@ export async function getCurrentPlay(): Promise<Play | null> {
       settings.fientaOrganizerId,
       play.title
     );
-    
+
     // Replace with Fienta performances only (no fallback to CMS)
     play.performances = fientaPerformances;
   } else {
     // If no Fienta integration, clear performances
     play.performances = [];
   }
+}
+
+export async function getCurrentPlay(): Promise<Play | null> {
+  const { data } = await sanityFetch({
+    query: currentPlayQuery,
+    tags: ["play", "currentPlay"],
+  });
+
+  if (!data) {
+    return null;
+  }
+
+  const play = data;
+
+  await enrichPlayWithFientaPerformances(play);
 
   return play;
 }
@@ -140,24 +160,13 @@ export async function getPlayBySlug(slug: string): Promise<Play | null> {
     tags: ["play"],
   });
 
-  const play = (data as Play | null) ?? null;
-  
-  if (!play) return null;
-
-  // Fetch Fienta events if organizer ID is available
-  const settings = await getSiteSettings();
-  if (settings?.fientaOrganizerId) {
-    const fientaPerformances = await getFientaPerformancesForPlay(
-      settings.fientaOrganizerId,
-      play.title
-    );
-    
-    // Replace with Fienta performances only (no fallback to CMS)
-    play.performances = fientaPerformances;
-  } else {
-    // If no Fienta integration, clear performances
-    play.performances = [];
+  if (!data) {
+    return null;
   }
+
+  const play = data;
+
+  await enrichPlayWithFientaPerformances(play);
 
   return play;
 }
@@ -168,7 +177,7 @@ export async function getAllNews(): Promise<NewsPost[]> {
     tags: ["newsPost"],
   });
 
-  return (data as NewsPost[]) ?? [];
+  return data as NewsPost[];
 }
 
 export async function getNewsPostBySlug(
@@ -180,7 +189,11 @@ export async function getNewsPostBySlug(
     tags: ["newsPost"],
   });
 
-  return (data as NewsPost | null) ?? null;
+  if (!data) {
+    return null;
+  }
+
+  return data;
 }
 
 export async function getAboutPageData(): Promise<AboutPageData> {
@@ -188,6 +201,7 @@ export async function getAboutPageData(): Promise<AboutPageData> {
     query: aboutPageQuery,
     tags: ["aboutPage", "teamMember", "siteSettings"],
   });
+
   const aboutData = data as AboutPageData | null;
 
   return {

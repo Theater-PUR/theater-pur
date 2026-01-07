@@ -4,9 +4,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppShell } from "@/components/layout/AppShell";
-import { DraftModeIndicator } from "@/components/layout/DraftModeIndicator";
 import { getSiteSettings } from "@/lib/sanity-data";
 import { SanityLive } from "@/sanity/lib/live";
 import { VisualEditing } from "next-sanity/visual-editing";
@@ -24,7 +22,7 @@ const playfair = Playfair_Display({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSiteSettings({ stega: false });
+  const settings = await getSiteSettings();
   return {
     title: settings?.title,
     description: settings?.description,
@@ -36,7 +34,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const settings = await getSiteSettings();
   const { isEnabled: isDraftMode } = await draftMode();
 
   return (
@@ -47,16 +44,13 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} ${playfair.variable} antialiased bg-background`}
       >
-        {isDraftMode && <DraftModeIndicator />}
-        <TooltipProvider>
-          <AppShell settings={settings} isDraftMode={isDraftMode}>
-            {children}
-          </AppShell>
-          <Toaster />
-          <Sonner />
-        </TooltipProvider>
+        {children}
+
         <SanityLive />
         {isDraftMode && <VisualEditing />}
+
+        <Toaster />
+        <Sonner />
       </body>
     </html>
   );
