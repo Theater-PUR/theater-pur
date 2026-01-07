@@ -2,16 +2,16 @@ import Link from "next/link";
 import { Theater, Mail, MapPin, Phone } from "lucide-react";
 
 export interface FooterProps {
-  brandName: string;
-  brandTagline: string;
-  footerDescription: string;
-  footerInfoTitle: string;
-  footerInfoDescription: string;
-  contactEmail: string;
-  contactPhone: string;
-  addressStreet: string;
-  addressPostalCode: string;
-  addressCity: string;
+  brandName?: string;
+  brandTagline?: string;
+  footerDescription?: string;
+  footerInfoTitle?: string;
+  footerInfoDescription?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  addressStreet?: string;
+  addressPostalCode?: string;
+  addressCity?: string;
 }
 
 export function Footer({

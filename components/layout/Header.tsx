@@ -16,18 +16,18 @@ const navLinks = [
 ];
 
 export interface HeaderProps {
-  brandName: string;
-  brandTagline: string;
-  primaryCtaText: string;
-  primaryCtaLink: string;
+  brandName?: string;
+  brandTagline?: string;
+  primaryCtaText?: string;
+  primaryCtaLink?: string;
   isDraftMode?: boolean;
 }
 
 export function Header({
-  brandName,
-  brandTagline,
-  primaryCtaText,
-  primaryCtaLink,
+  brandName = "Theater Pur",
+  brandTagline = "Regensburger Laienspielgruppe",
+  primaryCtaText = "Tickets",
+  primaryCtaLink = "/aktuell",
   isDraftMode = false,
 }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
