@@ -74,7 +74,7 @@ export function filterEventsByTitle(
   return events.filter((event) => {
     const normalizedEventTitle = normalizeString(event.title);
 
-    return normalizedEventTitle.startsWith(normalizedPlayTitle);
+    return normalizedEventTitle === normalizedPlayTitle;
   });
 }
 
