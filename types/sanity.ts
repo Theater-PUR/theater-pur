@@ -54,16 +54,6 @@ export interface TicketPrice {
   description?: string;
 }
 
-export interface Performance {
-  _key: string;
-  date: string;
-  time: string;
-  location?: Location;
-  availableSeats?: number;
-  totalSeats?: number;
-  bookingUrl?: string;
-}
-
 export interface Play {
   _id: string;
   _type: "play";
@@ -78,8 +68,6 @@ export interface Play {
   duration?: string;
   isActive?: boolean;
   cast?: CastMember[];
-  performances?: Performance[];
-  pricing?: TicketPrice[];
   gallery?: SanityImage[];
 }
 

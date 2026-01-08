@@ -154,12 +154,6 @@ export const currentPlayQuery = `
     roleName,
     photo
   },
-  pricing[]{
-    _key,
-    category,
-    price,
-    description
-  },
   gallery[]{
     asset,
     alt,
@@ -201,12 +195,6 @@ export const playBySlugQuery = `
     actorName,
     roleName,
     photo
-  },
-  pricing[]{
-    _key,
-    category,
-    price,
-    description
   },
   gallery[]{
     asset,

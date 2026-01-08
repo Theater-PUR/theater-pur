@@ -19,11 +19,15 @@ import type {
   StatItem,
   TeamMember,
 } from "@/types/sanity";
-import { getFientaPerformancesForPlay } from "./fienta";
+import {
+  FientaEvent,
+  getFientaPerformancesForPlay as getFientaEventsForPlay,
+} from "./fienta";
+import cloneDeep from "lodash/cloneDeep";
 
 export interface HomePageData {
   settings: SiteSettings | null;
-  currentPlay: Play | null;
+  currentPlay: PlayWithFientaEvents | null;
   latestNews: NewsPost[];
 }
 
@@ -68,20 +72,20 @@ export async function getHomePageData(): Promise<HomePageData | null> {
     return null;
   }
 
-  const currentPlay = homeData.currentPlay;
+  const currentPlay = homeData.currentPlay as PlayWithFientaEvents | null;
 
   // Fetch Fienta events for current play if available
   if (currentPlay && homeData.settings?.fientaOrganizerId) {
-    const fientaPerformances = await getFientaPerformancesForPlay(
+    const fientaPerformances = await getFientaEventsForPlay(
       homeData.settings.fientaOrganizerId,
       currentPlay.title
     );
 
     // Replace with Fienta performances only (no fallback to CMS)
-    currentPlay.performances = fientaPerformances;
+    currentPlay.events = fientaPerformances;
   } else if (currentPlay) {
     // If no Fienta integration, clear performances
-    currentPlay.performances = [];
+    currentPlay.events = [];
   }
 
   return {
@@ -104,30 +108,36 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   return data;
 }
 
+interface PlayWithFientaEvents extends Play {
+  events: FientaEvent[];
+}
+
 async function enrichPlayWithFientaPerformances(
   play: Play | null
-): Promise<void> {
+): Promise<PlayWithFientaEvents | null> {
   if (!play) {
-    return;
+    return null;
   }
+
+  const playWithFientaEvents = cloneDeep(play) as PlayWithFientaEvents;
 
   // Fetch Fienta events if organizer ID is available
   const settings = await getSiteSettings();
   if (settings?.fientaOrganizerId) {
-    const fientaPerformances = await getFientaPerformancesForPlay(
+    const fientaEvents = await getFientaEventsForPlay(
       settings.fientaOrganizerId,
-      play.title
+      playWithFientaEvents.title
     );
 
-    // Replace with Fienta performances only (no fallback to CMS)
-    play.performances = fientaPerformances;
+    playWithFientaEvents.events = fientaEvents;
   } else {
-    // If no Fienta integration, clear performances
-    play.performances = [];
+    playWithFientaEvents.events = [];
   }
+
+  return playWithFientaEvents;
 }
 
-export async function getCurrentPlay(): Promise<Play | null> {
+export async function getCurrentPlay(): Promise<PlayWithFientaEvents | null> {
   const { data } = await sanityFetch({
     query: currentPlayQuery,
     tags: ["play", "currentPlay"],
@@ -139,9 +149,7 @@ export async function getCurrentPlay(): Promise<Play | null> {
 
   const play = data;
 
-  await enrichPlayWithFientaPerformances(play);
-
-  return play;
+  return await enrichPlayWithFientaPerformances(play);
 }
 
 export async function getAllPlays(): Promise<Play[]> {
@@ -153,7 +161,9 @@ export async function getAllPlays(): Promise<Play[]> {
   return (data as Play[]) ?? [];
 }
 
-export async function getPlayBySlug(slug: string): Promise<Play | null> {
+export async function getPlayBySlug(
+  slug: string
+): Promise<PlayWithFientaEvents | null> {
   const { data } = await sanityFetch({
     query: playBySlugQuery,
     params: { slug },
@@ -166,9 +176,7 @@ export async function getPlayBySlug(slug: string): Promise<Play | null> {
 
   const play = data;
 
-  await enrichPlayWithFientaPerformances(play);
-
-  return play;
+  return await enrichPlayWithFientaPerformances(play);
 }
 
 export async function getAllNews(): Promise<NewsPost[]> {

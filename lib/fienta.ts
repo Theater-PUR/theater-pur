@@ -1,8 +1,6 @@
 // Fienta API integration
 // Documentation: https://fienta.com/help/displaying-events-on-your-website
 
-import type { Performance } from "@/types/sanity";
-
 export interface FientaEvent {
   id: number;
   title: string;
@@ -11,8 +9,10 @@ export interface FientaEvent {
   duration_string: string; // "Mon 16. December 2020 at 19:00 - 21:15"
   venue: string;
   address: string;
+  address_postal_code: string;
   description: string;
   url: string;
+  sales_status: "available" | "soldOut" | "soldOutSoon";
   buy_tickets_url: string;
   image_url: string;
   organizer_name: string;
@@ -28,11 +28,10 @@ export interface FientaResponse {
  * Fetch events from Fienta API for a specific organizer
  */
 export async function fetchFientaEvents(
-  organizerId: string,
-  locale: string = "de"
+  organizerId: string
 ): Promise<FientaEvent[]> {
   try {
-    const url = `https://fienta.com/api/v1/public/events?organizer=${organizerId}&locale=${locale}`;
+    const url = `https://fienta.com/api/v1/public/events?organizer=${organizerId}&locale=de`;
     const response = await fetch(url, {
       next: { revalidate: 300 }, // Cache for 5 minutes
     });
@@ -59,48 +58,24 @@ export function filterEventsByTitle(
   events: FientaEvent[],
   playTitle: string
 ): FientaEvent[] {
-  const normalizedPlayTitle = playTitle.trim().toLowerCase();
-  return events.filter(
-    (event) => event.title.trim().toLowerCase() === normalizedPlayTitle
-  );
-}
-
-/**
- * Transform a Fienta event into our Performance format
- */
-export function transformFientaEventToPerformance(
-  event: FientaEvent
-): Performance {
-  // Parse the date and time from starts_at
-  const startDate = new Date(event.starts_at.replace(" ", "T"));
-  const dateStr = startDate.toISOString().split("T")[0]; // YYYY-MM-DD format
-
-  // Extract time in German format
-  const timeStr = startDate.toLocaleTimeString("de-DE", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-
-  // Split address into parts (Fienta returns address without country)
-  // Example: "201 E Randolph St, Chicago, IL 60602"
-  const addressParts = event.address.split(",").map((part) => part.trim());
-
-  return {
-    _key: `fienta-${event.id}`,
-    date: dateStr,
-    time: `${timeStr} Uhr`,
-    location: {
-      name: event.venue,
-      street: addressParts[0] || undefined,
-      city: addressParts[addressParts.length - 1] || undefined,
-      postalCode: undefined, // Fienta doesn't provide this separately
-    },
-    bookingUrl: event.buy_tickets_url || event.url,
-    // Note: Fienta doesn't provide available seats info via API
-    availableSeats: undefined,
-    totalSeats: undefined,
+  // Normalize by removing invisible characters and normalizing Unicode
+  const normalizeString = (str: string) => {
+    return str
+      .trim()
+      .toLowerCase()
+      .normalize("NFKD") // Normalize Unicode
+      .replace(/[\u200B-\u200D\uFEFF\u00A0]/g, "") // Remove zero-width spaces
+      .replace(/[\u0000-\u001F\u007F-\u009F]/g, "") // Remove control characters
+      .replace(/\s+/g, " "); // Normalize whitespace
   };
+
+  const normalizedPlayTitle = normalizeString(playTitle);
+
+  return events.filter((event) => {
+    const normalizedEventTitle = normalizeString(event.title);
+
+    return normalizedEventTitle.startsWith(normalizedPlayTitle);
+  });
 }
 
 /**
@@ -109,8 +84,8 @@ export function transformFientaEventToPerformance(
 export async function getFientaPerformancesForPlay(
   organizerId: string,
   playTitle: string
-): Promise<Performance[]> {
+): Promise<FientaEvent[]> {
   const allEvents = await fetchFientaEvents(organizerId);
-  const matchingEvents = filterEventsByTitle(allEvents, playTitle);
-  return matchingEvents.map(transformFientaEventToPerformance);
+
+  return filterEventsByTitle(allEvents, playTitle);
 }

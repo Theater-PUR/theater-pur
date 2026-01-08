@@ -9,39 +9,14 @@ import { Button } from "@/components/ui/button";
 import { getHomePageData } from "@/lib/sanity-data";
 import { urlFor } from "@/sanity/lib/image";
 import type { HomePageData } from "@/lib/sanity-data";
-import type { StatItem, SanityBlock, Performance } from "@/types/sanity";
+import type { StatItem } from "@/types/sanity";
 import PageLayout from "./pages/layout";
+import { portableTextToPlain } from "@/lib/portableText";
 
 const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   calendar: Calendar,
   users: Users,
   award: Award,
-};
-
-const portableTextToPlain = (blocks?: SanityBlock[]) =>
-  blocks
-    ?.map((block) => block.children?.map((child) => child.text).join(""))
-    .join("\n\n") ?? "";
-
-const formatPerformance = (performance?: Performance) => {
-  if (!performance) return undefined;
-  const date = performance.date
-    ? new Intl.DateTimeFormat("de-DE", { dateStyle: "long" }).format(
-        new Date(performance.date)
-      )
-    : undefined;
-  const time = performance.time ? `, ${performance.time}` : "";
-  const location =
-    performance.location?.name ||
-    [performance.location?.city, performance.location?.street]
-      .filter(Boolean)
-      .join(" • ") ||
-    undefined;
-
-  return {
-    date: date ? `${date}${time}` : undefined,
-    location,
-  };
 };
 
 const mapStats = (stats?: StatItem[]) =>
@@ -52,7 +27,6 @@ const mapStats = (stats?: StatItem[]) =>
 
 const mapHomeData = (data?: HomePageData | null) => {
   const play = data?.currentPlay;
-  const firstPerformance = play?.performances?.[0];
   const mappedPlay = play
     ? {
         slug: play.slug?.current ?? play._id,
@@ -63,8 +37,6 @@ const mapHomeData = (data?: HomePageData | null) => {
           ? urlFor(play.coverImage).width(1000).height(750).url()
           : undefined,
         year: play.year,
-        isActive: true,
-        nextPerformance: formatPerformance(firstPerformance),
       }
     : null;
 

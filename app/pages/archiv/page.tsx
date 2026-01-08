@@ -1,12 +1,7 @@
 import { getAllPlays } from "@/lib/sanity-data";
 import { ArchivePageClient } from "./ArchivePageClient";
 import { urlFor } from "@/sanity/lib/image";
-import type { SanityBlock } from "@/types/sanity";
-
-const portableTextToPlain = (blocks?: SanityBlock[]) =>
-  blocks
-    ?.map((block) => block.children?.map((child) => child.text).join(""))
-    .join(" ") ?? "";
+import { portableTextToPlain } from "@/lib/portableText";
 
 export default async function ArchivePage() {
   const allPlays = await getAllPlays();
