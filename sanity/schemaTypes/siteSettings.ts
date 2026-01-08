@@ -56,6 +56,22 @@ const siteSettingsSchema = {
         "Erleben Sie unvergessliche Theatermomente. Leidenschaft, Kunst und Gemeinschaft vereint auf einer Bühne.",
     },
     {
+      name: "ogImage",
+      title: "Social Media Vorschaubild",
+      type: "image",
+      group: "general",
+      description:
+        "Standardbild für Social Media Sharing (Facebook, Twitter, etc.). Empfohlene Größe: 1200x630px",
+      options: { hotspot: true },
+      fields: [
+        {
+          name: "alt",
+          title: "Alternativtext",
+          type: "string",
+        },
+      ],
+    },
+    {
       name: "brandName",
       title: "Markenname",
       type: "string",

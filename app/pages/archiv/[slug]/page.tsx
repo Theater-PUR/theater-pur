@@ -1,18 +1,82 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Users, ArrowLeft } from "lucide-react";
-import { getPlayBySlug } from "@/lib/sanity-data";
+import { getPlayBySlug, getSiteSettings } from "@/lib/sanity-data";
 import { urlFor } from "@/sanity/lib/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ImageGallery } from "@/components/ImageGallery";
-import { PortableTextRenderer } from "@/lib/portableText";
+import { PortableTextRenderer, portableTextToPlain } from "@/lib/portableText";
+import type { Metadata } from "next";
 
 interface ArchivePlayPageProps {
   params: Promise<{
     slug: string;
   }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ArchivePlayPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const play = await getPlayBySlug(slug);
+  const settings = await getSiteSettings();
+
+  if (!play) {
+    return {
+      title: `Stück nicht gefunden | ${settings?.brandName}`,
+      description: "Das gesuchte Theaterstück wurde nicht gefunden",
+    };
+  }
+
+  // Use play cover image if available, otherwise fall back to site settings or logo
+  const ogImageUrl = play.coverImage
+    ? urlFor(play.coverImage).width(1200).height(630).url()
+    : settings?.ogImage
+      ? urlFor(settings.ogImage).width(1200).height(630).url()
+      : "/logo.png";
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const absoluteOgImageUrl = ogImageUrl.startsWith("http")
+    ? ogImageUrl
+    : `${siteUrl}${ogImageUrl}`;
+
+  const description =
+    portableTextToPlain(play.synopsis) ||
+    portableTextToPlain(play.description) ||
+    `${play.title} - ${play.year}`;
+
+  const title = play.author
+    ? `${play.title} von ${play.author} (${play.year})`
+    : `${play.title} (${play.year})`;
+
+  return {
+    title: `${title} | ${settings?.brandName}`,
+    description: description.substring(0, 160),
+    openGraph: {
+      type: "website",
+      locale: "de_DE",
+      url: `${siteUrl}/archiv/${slug}`,
+      siteName: settings?.brandName,
+      title: `${title} | ${settings?.brandName}`,
+      description: description.substring(0, 160),
+      images: [
+        {
+          url: absoluteOgImageUrl,
+          width: 1200,
+          height: 630,
+          alt: play.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | ${settings?.brandName}`,
+      description: description.substring(0, 160),
+      images: [absoluteOgImageUrl],
+    },
+  };
 }
 
 export default async function ArchivePlayPage({

@@ -111,6 +111,7 @@ export interface SiteSettings {
   // General
   title: string;
   description: string;
+  ogImage?: SanityImage;
   brandName?: string;
   brandTagline?: string;
   currentPlay?: {
