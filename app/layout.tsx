@@ -4,6 +4,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { getSiteSettings } from "@/lib/sanity-data";
 import { SanityLive } from "@/sanity/lib/live";
 import { VisualEditing } from "next-sanity/visual-editing";
@@ -88,6 +89,7 @@ export default async function RootLayout({
 
         <Toaster />
         <Sonner />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
