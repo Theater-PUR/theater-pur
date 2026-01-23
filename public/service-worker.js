@@ -1,3 +1,5 @@
+const SW_VERSION = "2026-01-23-v1";
+
 self.addEventListener("install", (event) => {
   event.waitUntil(self.skipWaiting());
 });
@@ -13,7 +15,16 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
+  if (!event.data) {
+    return;
+  }
+
+  if (event.data.type === "GET_VERSION") {
+    event.ports?.[0]?.postMessage({ type: "SW_VERSION", version: SW_VERSION });
+    return;
+  }
+
+  if (event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
 });
