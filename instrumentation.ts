@@ -8,6 +8,6 @@ export async function register() {
     } catch {
       // Probe failures must not prevent the original runtime security check.
     }
-    await import("./scripts/check-node-version.mjs");
+    await import("./scripts/check-runtime-version.mjs");
   }
 }
