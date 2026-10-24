@@ -15,7 +15,7 @@ Theaterpur Weyhe has been bringing passionate theater performances to audiences 
 - **Ticket Integration** - Seamless Fienta.com integration for online ticket sales
 - **Image Galleries** - Beautiful photo galleries for each production
 - **Contact Form** - Integrated contact functionality
-- **Draft Mode** - Preview unpublished content before going live
+- **Draft Mode** - Temporarily paused during the managed runtime security rollout
 - **Responsive Design** - Optimized for all devices with a modern dark theme
 - **SEO Optimized** - Dynamic metadata generation
 
@@ -58,8 +58,8 @@ homepage-2026/
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) 1.4.4 or newer in 1.x for dependency installation, builds, and serving (`.bun-version`)
-- Optional Node.js fallback: 22.23.4 or newer in 22.x (`nvm use`)
+- [Bun](https://bun.sh/) 1.4.4 or newer in 1.x for dependency installation (`.bun-version`)
+- Node.js 22.23.4 or newer in 22.x for builds and serving (`nvm use`)
 - [Sanity account](https://www.sanity.io/) and project
 - [Fienta account](https://fienta.com/) (optional, for ticket integration)
 
@@ -210,12 +210,7 @@ bun lint         # Run ESLint
 
 ## 🔒 Draft Mode
 
-Preview unpublished content using Next.js Draft Mode:
-
-- **Enable:** Visit `/api/draft-mode/enable`
-- **Disable:** Visit `/api/draft-mode/disable`
-- A banner appears when draft mode is active
-- Changes in Sanity Studio appear immediately
+Draft preview and immediate live updates are temporarily paused while the hosting provider rolls out the patched runtime. `/api/draft-mode/enable` returns HTTP 503 without enabling a draft cookie. Published changes and new slugs require a deployment before appearing in prebuilt HTML. See [Managed runtime rollout and content publishing](#managed-runtime-rollout-and-content-publishing) for the current workflow and restoration steps.
 
 ## 🤝 Contributing
 
