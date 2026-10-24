@@ -58,7 +58,7 @@ homepage-2026/
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) 1.4.4 or newer in 1.x for dependency installation (`.bun-version`)
+- [Bun](https://bun.sh/) 1.4.4 or newer for dependency installation
 - Node.js 22.23.4 or newer in 22.x for builds and serving (`nvm use`)
 - [Sanity account](https://www.sanity.io/) and project
 - [Fienta account](https://fienta.com/) (optional, for ticket integration)
@@ -181,7 +181,7 @@ bunx shadcn@latest add [component-name]
 
 1. Push your code to GitHub/GitLab/Bitbucket
 2. Import the project in [Vercel](https://vercel.com)
-   - `package.json` selects managed Node.js 22. Build and function startup enforce Node.js >=22.23.4 in 22.x plus the Brotli patch marker.
+   - `package.json` selects the managed Node.js 22 runtime. Build and function startup require Node.js >=22.23.4 in 22.x and the Brotli block-switch patch marker.
 3. Add environment variables
 4. Deploy!
 
