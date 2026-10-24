@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import { draftMode } from "next/headers";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { getSiteSettings } from "@/lib/sanity-data";
-import { SanityLive } from "@/sanity/lib/live";
-import { VisualEditing } from "next-sanity/visual-editing";
 import { urlFor } from "@/sanity/lib/image";
 
 const inter = Inter({
@@ -72,8 +69,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { isEnabled: isDraftMode } = await draftMode();
-
   return (
     <html lang="de" className="dark">
       <head>
@@ -83,9 +78,6 @@ export default async function RootLayout({
         className={`${inter.variable} ${playfair.variable} antialiased bg-background`}
       >
         {children}
-
-        <SanityLive />
-        {isDraftMode && <VisualEditing />}
 
         <Toaster />
         <Sonner />

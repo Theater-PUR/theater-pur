@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    // Deep Studio links reuse the prebuilt shell; Sanity owns client routing.
+    return {
+      beforeFiles: [{ source: "/studio/:path+", destination: "/studio" }],
+    };
+  },
   async headers() {
     return [
       {

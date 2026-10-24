@@ -10,7 +10,13 @@
 import { NextStudio } from "next-sanity/studio";
 import config from "../../../sanity.config";
 
-// export const dynamic = "force-static";
+// The Studio shell is shared by every author; Sanity loads data in the browser.
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return [{ tool: [] }];
+}
 
 export { metadata, viewport } from "next-sanity/studio";
 

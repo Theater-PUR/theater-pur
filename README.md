@@ -181,7 +181,7 @@ bunx shadcn@latest add [component-name]
 
 1. Push your code to GitHub/GitLab/Bitbucket
 2. Import the project in [Vercel](https://vercel.com)
-   - `vercel.json` selects the managed Bun 1.4 runtime. Build and function startup enforce Bun >=1.4.4 in 1.x plus the Brotli patch marker. The Node.js fallback stays >=22.23.4 in 22.x.
+   - `package.json` selects managed Node.js 22. Build and function startup enforce Node.js >=22.23.4 in 22.x plus the Brotli patch marker.
 3. Add environment variables
 4. Deploy!
 
@@ -239,4 +239,8 @@ This project is proprietary and confidential. All rights reserved © Theaterpur 
 
 **Built with ❤️ for Theaterpur Weyhe** 🎭
 
-Vercel functions run on the Bun 1.4 runtime (`vercel.json`). Use Bun 1.4.4 or newer in the 1.x line for local development and builds; `.bun-version` pins the minimum patched release. The startup guard verifies the runtime version and Brotli patch marker before serving requests. Node.js 22.23.4 or newer in 22.x remains a supported fallback runtime.
+## Managed runtime rollout and content publishing
+
+Vercel is still serving Node.js 22.23.2 functions, below the patched 22.23.4 minimum. The security guard continues rejecting those functions. Public news/archive detail pages are now prebuilt from every published Sanity slug, and the Studio shell is static; Studio deep links reuse that shell and Sanity loads authoring data directly in the browser.
+
+A new deployment is required after publishing a new news/archive slug or changing content that must appear in prebuilt HTML. Draft preview and server-side live revalidation remain unavailable until Vercel deploys a patched function runtime. Publishing content in Sanity is still possible; this change does not remove or edit CMS content. Once the provider runtime is patched, verify Studio/detail/draft endpoints before restoring on-demand rendering.

@@ -1,3 +1,4 @@
+import { client } from "@/sanity/lib/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Users, ArrowLeft } from "lucide-react";
@@ -9,6 +10,19 @@ import Image from "next/image";
 import { ImageGallery } from "@/components/ImageGallery";
 import { PortableTextRenderer, portableTextToPlain } from "@/lib/portableText";
 import type { Metadata } from "next";
+
+// Prebuild every published detail page while managed runtimes roll out the fix.
+// New slugs become available after the next deployment.
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  return client.fetch(
+    '*[_type == "play" && defined(slug.current)]{"slug": slug.current}',
+    {},
+    { perspective: "published", stega: false }
+  );
+}
 
 interface ArchivePlayPageProps {
   params: Promise<{
