@@ -11,7 +11,8 @@
     "type-check": "tsc --noEmit",
     "prepare": "husky",
     "pre-commit": "lint-staged",
-    "studio:deploy": "sanity deploy"
+    "studio:deploy": "sanity deploy",
+    "test:smoke": "node scripts/smoke-routes.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs}": [
@@ -69,7 +70,7 @@
     "unrs-resolver"
   ],
   "engines": {
-    "node": "24.x"
+    "node": "22.x"
   },
   "overrides": {
     "basic-ftp": "^5.3.1"
