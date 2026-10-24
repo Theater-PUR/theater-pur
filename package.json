@@ -70,5 +70,8 @@
   ],
   "engines": {
     "node": "24.x"
+  },
+  "overrides": {
+    "basic-ftp": "^5.3.1"
   }
 }
