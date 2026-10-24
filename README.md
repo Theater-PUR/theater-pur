@@ -59,7 +59,7 @@ homepage-2026/
 ### Prerequisites
 
 - [Bun](https://bun.sh/) for dependency installation
-- Node.js 24.22.1 or newer in the 24.x release line (`nvm use`)
+- Node.js 22.23.4 or newer in the 22.x release line (`nvm use`)
 - [Sanity account](https://www.sanity.io/) and project
 - [Fienta account](https://fienta.com/) (optional, for ticket integration)
 
@@ -181,7 +181,7 @@ bunx shadcn@latest add [component-name]
 
 1. Push your code to GitHub/GitLab/Bitbucket
 2. Import the project in [Vercel](https://vercel.com)
-   - `package.json` selects the managed Node.js 24 runtime. The build and Node.js function startup check the security minimum version.
+   - `package.json` selects the managed Node.js 22 runtime. The build and Node.js function startup check the security minimum version.
 3. Add environment variables
 4. Deploy!
 

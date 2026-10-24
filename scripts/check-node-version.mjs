@@ -1,12 +1,12 @@
-// Vercel manages patch releases for the selected Node 24 runtime. Reject stale
+// Vercel manages patch releases for the selected Node 22 runtime. Reject stale
 // build images and function runtimes before they can use pre-security Node.
 const [major, minor, patch] = process.versions.node.split(".").map(Number);
-const isPatchedNode24 =
-  major === 24 && (minor > 22 || (minor === 22 && patch >= 1));
+const isPatchedNode22 =
+  major === 22 && (minor > 23 || (minor === 23 && patch >= 4));
 
-if (!isPatchedNode24) {
+if (!isPatchedNode22) {
   throw new Error(
-    `Node.js 24.22.1 or newer in the 24.x release line is required for CVE-2026-111497; found ${process.versions.node}.`
+    `Node.js 22.23.4 or newer in the 22.x release line is required for CVE-2026-111497; found ${process.versions.node}.`
   );
 }
 
