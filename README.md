@@ -15,7 +15,7 @@ Theaterpur Weyhe has been bringing passionate theater performances to audiences 
 - **Ticket Integration** - Seamless Fienta.com integration for online ticket sales
 - **Image Galleries** - Beautiful photo galleries for each production
 - **Contact Form** - Integrated contact functionality
-- **Draft Mode** - Preview unpublished content before going live
+- **Draft Mode** - Temporarily paused during the managed runtime security rollout
 - **Responsive Design** - Optimized for all devices with a modern dark theme
 - **SEO Optimized** - Dynamic metadata generation
 
@@ -210,12 +210,7 @@ bun lint         # Run ESLint
 
 ## 🔒 Draft Mode
 
-Preview unpublished content using Next.js Draft Mode:
-
-- **Enable:** Visit `/api/draft-mode/enable`
-- **Disable:** Visit `/api/draft-mode/disable`
-- A banner appears when draft mode is active
-- Changes in Sanity Studio appear immediately
+Draft preview and immediate live updates are temporarily paused while the hosting provider rolls out the patched runtime. `/api/draft-mode/enable` returns HTTP 503 without enabling a draft cookie. Published changes and new slugs require a deployment before appearing in prebuilt HTML. See [Managed runtime rollout and content publishing](#managed-runtime-rollout-and-content-publishing) for the current workflow and restoration steps.
 
 ## 🤝 Contributing
 
@@ -239,4 +234,10 @@ This project is proprietary and confidential. All rights reserved © Theaterpur 
 
 **Built with ❤️ for Theaterpur Weyhe** 🎭
 
-Vercel controls function runtime patch releases. The security check intentionally blocks server-rendered routes if the provider is still running Node.js below 22.23.4 or the Brotli patch marker is missing. Existing static pages remain available. Studio, dynamic news/archive details, and draft preview resume only after the provider rolls out the patched runtime; no publishing or live-content workflow changes are applied.
+## Managed runtime rollout and content publishing
+
+Vercel is still serving Node.js 22.23.2 functions, below the patched 22.23.4 minimum. The security guard continues rejecting those functions. Public news/archive detail pages are now prebuilt from every published Sanity slug, and the Studio shell is static; Studio deep links reuse that shell and Sanity loads authoring data directly in the browser.
+
+A new deployment is required after publishing a new news/archive slug or changing content that must appear in prebuilt HTML. Automatic SanityLive refresh is paused, and draft preview and server-side live revalidation remain unavailable until Vercel deploys a patched function runtime. Publishing content in Sanity is still possible; this change does not remove or edit CMS content. Once the provider runtime is patched, verify Studio/detail/draft endpoints before restoring on-demand rendering.
+
+Draft preview requests return an import-free Edge maintenance response (HTTP 503, no-store, Retry-After), without starting a Node function or enabling cookies. The original implementation is retained in `sanity/lib/draft-mode-enabled.ts`. After verifying a patched provider Node runtime, restore that handler with `export { GET } from "@/sanity/lib/draft-mode-enabled"` and `export const runtime = "nodejs"`, restore SanityLive rendering, and change the smoke expectation back to HTTP 401 for requests without a preview secret.

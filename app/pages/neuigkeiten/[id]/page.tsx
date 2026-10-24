@@ -1,3 +1,4 @@
+import { client } from "@/sanity/lib/client";
 import { Button } from "@/components/ui/button";
 import { Calendar, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -6,6 +7,19 @@ import { getNewsPostBySlug, getSiteSettings } from "@/lib/sanity-data";
 import { urlFor } from "@/sanity/lib/image";
 import { PortableTextRenderer } from "@/lib/portableText";
 import type { Metadata } from "next";
+
+// Prebuild every published detail page while managed runtimes roll out the fix.
+// New slugs become available after the next deployment.
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
+export async function generateStaticParams(): Promise<{ id: string }[]> {
+  return client.fetch(
+    '*[_type == "newsPost" && defined(slug.current)]{"id": slug.current}',
+    {},
+    { perspective: "published", stega: false }
+  );
+}
 
 interface NewsDetailPageProps {
   params: Promise<{

@@ -1,3 +1,4 @@
+import { VisualEditing } from "next-sanity/visual-editing";
 import { AppShell } from "@/components/layout/AppShell";
 import { getSiteSettings } from "@/lib/sanity-data";
 import { draftMode } from "next/headers";
@@ -19,6 +20,7 @@ export default async function PageLayout({
       headerPosition={headerPosition}
     >
       {children}
+      {isDraftMode && <VisualEditing />}
     </AppShell>
   );
 }

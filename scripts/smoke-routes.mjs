@@ -23,12 +23,16 @@ for (const path of paths) {
   if (response.status !== 200) failed = true;
   await response.body?.cancel();
 }
-// Without a preview secret this handler must reject before enabling draft mode.
+// Temporary Edge maintenance response must never enable draft mode.
 const draftResponse = await fetch(new URL("/api/draft-mode/enable", baseUrl), {
   redirect: "manual",
 });
-console.log(`${draftResponse.status} /api/draft-mode/enable (expected 401)`);
-if (draftResponse.status !== 401 || draftResponse.headers.has("set-cookie")) {
+console.log(`${draftResponse.status} /api/draft-mode/enable (expected 503)`);
+if (
+  draftResponse.status !== 503 ||
+  draftResponse.headers.has("set-cookie") ||
+  draftResponse.headers.get("cache-control") !== "no-store"
+) {
   failed = true;
 }
 await draftResponse.body?.cancel();
