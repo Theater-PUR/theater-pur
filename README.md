@@ -58,8 +58,8 @@ homepage-2026/
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) 1.4.4 or newer in 1.x for dependency installation, builds, and serving (`.bun-version`)
-- Optional Node.js fallback: 22.23.4 or newer in 22.x (`nvm use`)
+- [Bun](https://bun.sh/) 1.4.4 or newer for dependency installation
+- Node.js 22.23.4 or newer in 22.x for builds and serving (`nvm use`)
 - [Sanity account](https://www.sanity.io/) and project
 - [Fienta account](https://fienta.com/) (optional, for ticket integration)
 
@@ -181,7 +181,7 @@ bunx shadcn@latest add [component-name]
 
 1. Push your code to GitHub/GitLab/Bitbucket
 2. Import the project in [Vercel](https://vercel.com)
-   - `vercel.json` selects the managed Bun 1.4 runtime. Build and function startup enforce Bun >=1.4.4 in 1.x plus the Brotli patch marker. The Node.js fallback stays >=22.23.4 in 22.x.
+   - `package.json` selects the managed Node.js 22 runtime. Build and function startup require Node.js >=22.23.4 in 22.x and the Brotli block-switch patch marker.
 3. Add environment variables
 4. Deploy!
 
@@ -239,4 +239,4 @@ This project is proprietary and confidential. All rights reserved © Theaterpur 
 
 **Built with ❤️ for Theaterpur Weyhe** 🎭
 
-Vercel functions run on the Bun 1.4 runtime (`vercel.json`). Use Bun 1.4.4 or newer in the 1.x line for local development and builds; `.bun-version` pins the minimum patched release. The startup guard verifies the runtime version and Brotli patch marker before serving requests. Node.js 22.23.4 or newer in 22.x remains a supported fallback runtime.
+Vercel controls function runtime patch releases. The security check intentionally blocks server-rendered routes if the provider is still running Node.js below 22.23.4 or the Brotli patch marker is missing. Existing static pages remain available. Studio, dynamic news/archive details, and draft preview resume only after the provider rolls out the patched runtime; no publishing or live-content workflow changes are applied.
