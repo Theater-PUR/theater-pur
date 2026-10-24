@@ -1,4 +1,3 @@
-import { SanityLive } from "@/sanity/lib/live";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { AppShell } from "@/components/layout/AppShell";
 import { getSiteSettings } from "@/lib/sanity-data";
@@ -21,7 +20,6 @@ export default async function PageLayout({
       headerPosition={headerPosition}
     >
       {children}
-      <SanityLive />
       {isDraftMode && <VisualEditing />}
     </AppShell>
   );
